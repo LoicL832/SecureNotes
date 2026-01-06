@@ -1,0 +1,16 @@
+{
+  "name": "securenotes-frontend",
+  "version": "1.0.0",
+  "description": "SecureNotes Frontend - Interface web pour le système de notes sécurisé",
+  "scripts": {
+    "start": "npx http-server . -p 8080 -o",
+    "dev": "npx http-server . -p 8080"
+  },
+  "keywords": ["frontend", "security", "notes"],
+  "author": "Groupe 6",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
+

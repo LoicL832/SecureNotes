@@ -110,14 +110,16 @@ app.use('/api/shares', sharesRoutes);
 app.use('/api/internal', internalRoutes);
 
 // Serve le frontend statique
-app.use(express.static('public'));
+const path = require('path');
+const frontendPath = path.join(__dirname, '../../frontend');
+app.use(express.static(frontendPath));
 
 // Route catch-all pour le frontend
 app.get('*', (req, res, next) => {
   if (req.path.startsWith('/api/')) {
     return next();
   }
-  res.sendFile('index.html', { root: 'public' });
+  res.sendFile('index.html', { root: frontendPath });
 });
 
 // ============= GESTION D'ERREURS =============

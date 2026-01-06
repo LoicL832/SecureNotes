@@ -7,6 +7,22 @@ Deadline : 12 janvier 2026, 23h59
 
 ---
 
+## 🚀 Démarrage Rapide
+
+```bash
+npm install && npm start
+```
+
+Ouvrez http://localhost:3001
+
+**Documentation :**
+- 📖 [Guide de Démarrage Rapide](QUICKSTART.md) - Commencer en 2 minutes
+- 📂 [Architecture du Projet](PROJECT_STRUCTURE.md) - Structure détaillée
+- 🔧 [Documentation Backend](backend/README.md)
+- 🎨 [Documentation Frontend](frontend/README.md)
+
+---
+
 ## 📋 Table des matières
 
 - [Vue d'ensemble](#vue-densemble)
@@ -184,47 +200,82 @@ Format : JSON avec timestamp, utilisateur, action, IP
 - **npm** : v6+
 - **Système** : Windows, Linux ou macOS
 
+### Architecture du projet
+
+Le projet est maintenant structuré en deux parties distinctes :
+
+```
+SecureNotes/
+├── backend/                # Serveur backend (API REST)
+│   ├── src/               # Code source
+│   ├── config/            # Configuration
+│   ├── tests/             # Tests de sécurité
+│   ├── data/              # Données persistantes
+│   └── package.json
+├── frontend/              # Application frontend (Web)
+│   ├── index.html
+│   ├── css/
+│   ├── js/
+│   └── package.json
+├── docs/                  # Documentation
+└── package.json           # Scripts racine
+```
+
 ### Étapes
 
 1. **Cloner le repository**
 
-```powershell
+```bash
 git clone https://github.com/LoicL832/SecureNotes.git
 cd SecureNotes
 ```
 
-2. **Installer les dépendances**
+2. **Installer toutes les dépendances**
 
-```powershell
+```bash
 npm install
 ```
 
-3. **Configuration (optionnel)**
+Cela installe automatiquement les dépendances du backend ET du frontend.
 
-Modifier `config/config.js` pour :
-- Changer le secret JWT (IMPORTANT en production !)
-- Ajuster le port des serveurs
-- Configurer CORS
+3. **Lancer le serveur 1 (avec frontend intégré)**
 
-4. **Lancer le serveur 1**
-
-```powershell
+```bash
 npm run server1
 ```
 
-Serveur disponible sur : `http://localhost:3001`
+Serveur disponible sur : `http://localhost:3001`  
+Frontend accessible sur : `http://localhost:3001`
 
-5. **Lancer le serveur 2 (dans un autre terminal)**
+4. **Lancer le serveur 2 (dans un autre terminal)**
 
-```powershell
+```bash
 npm run server2
 ```
 
 Serveur disponible sur : `http://localhost:3002`
 
-6. **Accéder à l'interface web**
+5. **Accéder à l'interface web**
 
 Ouvrir le navigateur : `http://localhost:3001`
+
+### Démarrage alternatif
+
+**Backend seul :**
+```bash
+npm run dev:backend
+# ou
+cd backend && npm start
+```
+
+**Frontend seul (serveur de développement) :**
+```bash
+npm run dev:frontend
+# ou
+cd frontend && npm start
+```
+
+Le frontend sera accessible sur `http://localhost:8080` et communiquera avec le backend sur le port 3001.
 
 ---
 
@@ -267,13 +318,14 @@ Ouvrir le navigateur : `http://localhost:3001`
 
 **Démarrer un serveur avec configuration personnalisée :**
 
-```powershell
+```bash
+cd backend
 node src/server.js --port=3003 --name=server3 --peer=http://localhost:3001
 ```
 
 **Lancer les tests de sécurité :**
 
-```powershell
+```bash
 npm test
 ```
 
@@ -396,7 +448,7 @@ Synchronise les données entre serveurs
 
 Le projet inclut une suite complète de tests de sécurité :
 
-```powershell
+```bash
 npm test
 ```
 
@@ -441,46 +493,52 @@ npm test
 
 ```
 SecureNotes/
-├── config/
-│   └── config.js           # Configuration globale
-├── src/
-│   ├── middleware/
-│   │   ├── auth.js         # Authentification JWT
-│   │   └── security.js     # Middlewares de sécurité
-│   ├── routes/
-│   │   ├── auth.js         # Routes d'authentification
-│   │   ├── notes.js        # Routes des notes
-│   │   ├── shares.js       # Routes de partage
-│   │   └── internal.js     # Routes de réplication
-│   ├── services/
-│   │   ├── userService.js  # Gestion utilisateurs
-│   │   ├── noteService.js  # Gestion notes
-│   │   ├── shareService.js # Gestion partages
-│   │   └── replicationService.js # Réplication
-│   ├── utils/
-│   │   ├── crypto.js       # Chiffrement AES-256-GCM
-│   │   ├── logger.js       # Logs de sécurité
-│   │   └── validator.js    # Validation entrées
-│   └── server.js           # Serveur principal
-├── public/
+├── backend/
+│   ├── config/
+│   │   └── config.js           # Configuration globale
+│   ├── src/
+│   │   ├── middleware/
+│   │   │   ├── auth.js         # Authentification JWT
+│   │   │   └── security.js     # Middlewares de sécurité
+│   │   ├── routes/
+│   │   │   ├── auth.js         # Routes d'authentification
+│   │   │   ├── notes.js        # Routes des notes
+│   │   │   ├── shares.js       # Routes de partage
+│   │   │   └── internal.js     # Routes de réplication
+│   │   ├── services/
+│   │   │   ├── userService.js  # Gestion utilisateurs
+│   │   │   ├── noteService.js  # Gestion notes
+│   │   │   ├── shareService.js # Gestion partages
+│   │   │   └── replicationService.js # Réplication
+│   │   ├── utils/
+│   │   │   ├── crypto.js       # Chiffrement AES-256-GCM
+│   │   │   ├── logger.js       # Logs de sécurité
+│   │   │   └── validator.js    # Validation entrées
+│   │   └── server.js           # Serveur principal
+│   ├── tests/
+│   │   └── security-tests.js   # Tests de sécurité
+│   ├── data/                   # Données (gitignored)
+│   │   ├── users/
+│   │   ├── notes/
+│   │   ├── shares/
+│   │   └── logs/
+│   ├── init.js                 # Script d'initialisation
+│   └── package.json
+├── frontend/
 │   ├── css/
-│   │   └── style.css       # Styles
+│   │   └── style.css           # Styles
 │   ├── js/
-│   │   ├── api.js          # Client API
-│   │   ├── auth.js         # Gestion auth frontend
-│   │   ├── notes.js        # Gestion notes frontend
-│   │   └── app.js          # Application principale
-│   └── index.html          # Interface web
-├── tests/
-│   └── security-tests.js   # Tests de sécurité
+│   │   ├── api.js              # Client API
+│   │   ├── auth.js             # Gestion auth frontend
+│   │   ├── notes.js            # Gestion notes frontend
+│   │   └── app.js              # Application principale
+│   ├── index.html              # Interface web
+│   └── package.json
 ├── docs/
-│   └── UMLSec-Diagrams.md  # Diagrammes UMLSec
-├── data/                   # Données (gitignored)
-│   ├── users/
-│   ├── notes/
-│   ├── shares/
-│   └── logs/
-├── package.json
+│   ├── Guide-Installation.md
+│   ├── Rapport-Securite.md
+│   └── UMLSec-Diagrams.md      # Diagrammes UMLSec
+├── package.json                # Scripts racine
 └── README.md
 ```
 

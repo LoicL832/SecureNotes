@@ -1,30 +1,17 @@
 {
   "name": "securenotes",
   "version": "1.0.0",
-  "description": "Système de stockage sécurisé de notes avec réplication",
-  "main": "src/server.js",
+  "description": "Système de stockage sécurisé de notes avec réplication - Projet restructuré",
   "scripts": {
-    "init": "node init.js",
-    "postinstall": "node init.js",
-    "start": "node src/server.js",
-    "server1": "node src/server.js --port=3001 --name=server1 --peer=http://localhost:3002",
-    "server2": "node src/server.js --port=3002 --name=server2 --peer=http://localhost:3001",
-    "test": "node tests/security-tests.js",
-    "dev": "node src/server.js --port=3001 --name=server1"
+    "postinstall": "cd backend && npm install && cd ../frontend && npm install",
+    "start": "cd backend && npm start",
+    "server1": "cd backend && npm run server1",
+    "server2": "cd backend && npm run server2",
+    "test": "cd backend && npm test",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm start"
   },
   "keywords": ["security", "notes", "replication", "rest-api"],
   "author": "Groupe 6",
-  "license": "MIT",
-  "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.0.2",
-    "express": "^4.18.2",
-    "express-rate-limit": "^7.1.5",
-    "helmet": "^7.1.0",
-    "cors": "^2.8.5",
-    "uuid": "^9.0.1"
-  },
-  "devDependencies": {
-    "axios": "^1.6.5"
-  }
+  "license": "MIT"
 }
