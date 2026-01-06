@@ -1,4 +1,14 @@
-# SecureNotes - Frontend 🎨
+# SecureNotes - Frontend
+
+## 🎯 Architecture à deux pages séparées
+
+Le frontend est maintenant organisé en **deux pages HTML distinctes** avec un système de redirection :
+
+- **login.html** - Page de connexion et d'inscription
+- **notes.html** - Page de gestion des notes (protégée par authentification)
+- **index.html** - Redirection automatique vers login.html
+
+## 📋 Structure des pages 🎨
 
 Interface web pour le système de gestion de notes sécurisé SecureNotes.
 

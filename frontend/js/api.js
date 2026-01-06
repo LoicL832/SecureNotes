@@ -1,5 +1,5 @@
 // API Client pour communiquer avec le backend
-const API_BASE_URL = window.location.origin + '/api';
+const API_BASE_URL = 'http://localhost:3001/api';
 
 class APIClient {
     constructor() {
@@ -39,10 +39,20 @@ class APIClient {
 
         try {
             const response = await fetch(url, config);
-            const data = await response.json();
+
+            // Vérifie si la réponse a du contenu
+            const text = await response.text();
+            let data;
+
+            try {
+                data = text ? JSON.parse(text) : {};
+            } catch (e) {
+                console.error('Failed to parse JSON:', text);
+                throw new Error('Réponse invalide du serveur');
+            }
 
             if (!response.ok) {
-                throw new Error(data.error || 'Une erreur est survenue');
+                throw new Error(data.error || `Erreur ${response.status}: ${response.statusText}`);
             }
 
             return data;

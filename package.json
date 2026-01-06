@@ -4,14 +4,24 @@
   "description": "Système de stockage sécurisé de notes avec réplication - Projet restructuré",
   "scripts": {
     "postinstall": "cd backend && npm install && cd ../frontend && npm install",
-    "start": "cd backend && npm start",
+    "start": "concurrently \"npm run server1\" \"npm run server2\" \"npm run dev:frontend\" --names \"backend,frontend\" --prefix-colors \"blue,green\" --kill-others",
     "server1": "cd backend && npm run server1",
     "server2": "cd backend && npm run server2",
     "test": "cd backend && npm test",
     "dev:backend": "cd backend && npm run dev",
-    "dev:frontend": "cd frontend && npm start"
+    "dev:frontend": "cd frontend && npm start",
+    "start:backend-only": "cd backend && npm start",
+    "start:both-servers": "concurrently \"npm run server1\" \"npm run server2\" \"npm run dev:frontend\" --names \"server1,server2,frontend\" --prefix-colors \"blue,cyan,green\" --kill-others"
   },
-  "keywords": ["security", "notes", "replication", "rest-api"],
+  "keywords": [
+    "security",
+    "notes",
+    "replication",
+    "rest-api"
+  ],
   "author": "Groupe 6",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
 }

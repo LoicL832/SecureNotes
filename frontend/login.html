@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' http://localhost:3001 http://localhost:3002">
+    <title>SecureNotes - Connexion</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Écran de connexion -->
+    <div id="auth-screen" class="screen active">
+        <div class="auth-container">
+            <div class="logo">
+                <h1>🔒 SecureNotes</h1>
+                <p>Vos notes, chiffrées et sécurisées</p>
+            </div>
+
+            <!-- Formulaire de connexion -->
+            <div id="login-form" class="auth-form active">
+                <h2>Connexion</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="login-username">Nom d'utilisateur</label>
+                        <input type="text" id="login-username" required autocomplete="username">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Mot de passe</label>
+                        <input type="password" id="login-password" required autocomplete="current-password">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Se connecter</button>
+                    <p class="switch-form">
+                        Pas de compte ? <a href="#" id="show-register">S'inscrire</a>
+                    </p>
+                </form>
+            </div>
+
+            <!-- Formulaire d'inscription -->
+            <div id="register-form" class="auth-form">
+                <h2>Inscription</h2>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="register-username">Nom d'utilisateur</label>
+                        <input type="text" id="register-username" required autocomplete="username">
+                        <small>3-50 caractères, lettres, chiffres et underscore uniquement</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email">Email</label>
+                        <input type="email" id="register-email" required autocomplete="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Mot de passe</label>
+                        <input type="password" id="register-password" required autocomplete="new-password">
+                        <small>Min 8 caractères : majuscule, minuscule, chiffre et caractère spécial</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-confirm">Confirmer le mot de passe</label>
+                        <input type="password" id="register-confirm" required autocomplete="new-password">
+                    </div>
+                    <button type="submit" class="btn btn-primary">S'inscrire</button>
+                    <p class="switch-form">
+                        Déjà un compte ? <a href="#" id="show-login">Se connecter</a>
+                    </p>
+                </form>
+            </div>
+
+            <div id="auth-message" class="message"></div>
+        </div>
+    </div>
+
+    <!-- Notifications -->
+    <div id="notification-container"></div>
+
+    <script src="js/api.js?v=3"></script>
+    <script src="js/loginApp.js?v=3"></script>
+    <script>
+        // Vérifie si l'utilisateur est déjà connecté
+        const token = localStorage.getItem('token');
+        if (token) {
+            // Redirige vers la page des notes si déjà connecté
+            window.location.href = 'notes.html';
+        }
+    </script>
+</body>
+</html>
+

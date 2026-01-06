@@ -13,13 +13,25 @@ Deadline : 12 janvier 2026, 23h59
 npm install && npm start
 ```
 
-Ouvrez http://localhost:3001
+**L'application démarre automatiquement :**
+- 🖥️ Frontend sur http://localhost:8080
+- ⚙️ Backend sur http://localhost:3001
+
+**Ouvrez votre navigateur sur : http://localhost:8080**
 
 **Documentation :**
+- 📖 [Guide de Démarrage Complet](DEMARRAGE.md) - Instructions détaillées
 - 📖 [Guide de Démarrage Rapide](QUICKSTART.md) - Commencer en 2 minutes
+- 🔧 [Résolution des problèmes](PROBLEME-RESOLU.md) - Si vous rencontrez des erreurs
 - 📂 [Architecture du Projet](PROJECT_STRUCTURE.md) - Structure détaillée
+- 📄 [Guide des Pages Séparées](docs/Guide-Pages-Separees.md) - Architecture frontend
+- 🧪 [Guide de Tests](TESTS.md) - Tests et dépannage
 - 🔧 [Documentation Backend](backend/README.md)
 - 🎨 [Documentation Frontend](frontend/README.md)
+
+**Guides de résolution :**
+- 🚨 [Erreur CSP "Refused to connect"](SOLUTION-CSP.md)
+- 🚨 [Erreur 404 sur API](SOLUTION-404.md)
 
 ---
 

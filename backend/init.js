@@ -46,8 +46,3 @@ Object.entries(files).forEach(([file, content]) => {
   }
 });
 
-console.log('\n✨ Initialisation terminée !');
-console.log('\n📝 Prochaines étapes:');
-console.log('   1. npm install');
-console.log('   2. npm run server1');
-console.log('   3. Ouvrir http://localhost:3001\n');
