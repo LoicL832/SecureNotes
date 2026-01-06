@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'">
+    <title>SecureNotes - Gestion sécurisée de notes</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Écran de connexion -->
+    <div id="auth-screen" class="screen active">
+        <div class="auth-container">
+            <div class="logo">
+                <h1>🔒 SecureNotes</h1>
+                <p>Vos notes, chiffrées et sécurisées</p>
+            </div>
+
+            <!-- Formulaire de connexion -->
+            <div id="login-form" class="auth-form active">
+                <h2>Connexion</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="login-username">Nom d'utilisateur</label>
+                        <input type="text" id="login-username" required autocomplete="username">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Mot de passe</label>
+                        <input type="password" id="login-password" required autocomplete="current-password">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Se connecter</button>
+                    <p class="switch-form">
+                        Pas de compte ? <a href="#" id="show-register">S'inscrire</a>
+                    </p>
+                </form>
+            </div>
+
+            <!-- Formulaire d'inscription -->
+            <div id="register-form" class="auth-form">
+                <h2>Inscription</h2>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="register-username">Nom d'utilisateur</label>
+                        <input type="text" id="register-username" required autocomplete="username">
+                        <small>3-50 caractères, lettres, chiffres et underscore uniquement</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email">Email</label>
+                        <input type="email" id="register-email" required autocomplete="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Mot de passe</label>
+                        <input type="password" id="register-password" required autocomplete="new-password">
+                        <small>Min 8 caractères : majuscule, minuscule, chiffre et caractère spécial</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-confirm">Confirmer le mot de passe</label>
+                        <input type="password" id="register-confirm" required autocomplete="new-password">
+                    </div>
+                    <button type="submit" class="btn btn-primary">S'inscrire</button>
+                    <p class="switch-form">
+                        Déjà un compte ? <a href="#" id="show-login">Se connecter</a>
+                    </p>
+                </form>
+            </div>
+
+            <div id="auth-message" class="message"></div>
+        </div>
+    </div>
+
+    <!-- Écran principal -->
+    <div id="main-screen" class="screen">
+        <header>
+            <div class="header-content">
+                <h1>🔒 SecureNotes</h1>
+                <div class="user-info">
+                    <span id="username-display"></span>
+                    <button id="logout-btn" class="btn btn-secondary">Déconnexion</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-container">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <nav>
+                    <button class="nav-btn active" data-view="my-notes">
+                        📝 Mes notes
+                    </button>
+                    <button class="nav-btn" data-view="shared-with-me">
+                        👥 Partagées avec moi
+                    </button>
+                    <button class="nav-btn" data-view="shared-by-me">
+                        📤 Mes partages
+                    </button>
+                </nav>
+                <button id="new-note-btn" class="btn btn-primary btn-block">
+                    ➕ Nouvelle note
+                </button>
+            </aside>
+
+            <!-- Contenu principal -->
+            <main class="content">
+                <!-- Vue: Mes notes -->
+                <div id="my-notes-view" class="view active">
+                    <h2>Mes notes</h2>
+                    <div id="notes-list" class="notes-list"></div>
+                </div>
+
+                <!-- Vue: Notes partagées avec moi -->
+                <div id="shared-with-me-view" class="view">
+                    <h2>Notes partagées avec moi</h2>
+                    <div id="shared-notes-list" class="notes-list"></div>
+                </div>
+
+                <!-- Vue: Mes partages -->
+                <div id="shared-by-me-view" class="view">
+                    <h2>Mes partages</h2>
+                    <div id="my-shares-list" class="shares-list"></div>
+                </div>
+
+                <!-- Éditeur de note -->
+                <div id="note-editor" class="note-editor hidden">
+                    <div class="editor-header">
+                        <button id="back-to-list" class="btn btn-secondary">← Retour</button>
+                        <div class="editor-actions">
+                            <button id="save-note-btn" class="btn btn-primary">💾 Enregistrer</button>
+                            <button id="delete-note-btn" class="btn btn-danger">🗑️ Supprimer</button>
+                            <button id="share-note-btn" class="btn btn-secondary">👥 Partager</button>
+                        </div>
+                    </div>
+                    <div class="editor-content">
+                        <input type="text" id="note-title" class="note-title-input" placeholder="Titre de la note">
+                        <textarea id="note-content" class="note-content-input" placeholder="Contenu de la note..."></textarea>
+                    </div>
+                    <div id="note-info" class="note-info"></div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal de partage -->
+    <div id="share-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Partager la note</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="share-username">Nom d'utilisateur</label>
+                    <input type="text" id="share-username" placeholder="Nom d'utilisateur du destinataire">
+                </div>
+                <div class="form-group">
+                    <label>Permission</label>
+                    <select id="share-permission">
+                        <option value="read">Lecture seule</option>
+                        <option value="write">Lecture et écriture</option>
+                    </select>
+                </div>
+                <div id="share-message" class="message"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancel-share-btn" class="btn btn-secondary">Annuler</button>
+                <button id="confirm-share-btn" class="btn btn-primary">Partager</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications -->
+    <div id="notification-container"></div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/notes.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

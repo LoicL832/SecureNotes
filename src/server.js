@@ -1,0 +1,216 @@
+const express = require('express');
+const helmet = require('helmet');
+const cors = require('cors');
+const rateLimit = require('express-rate-limit');
+const config = require('../config/config');
+const logger = require('./utils/logger');
+const ReplicationService = require('./services/replicationService');
+
+// Middlewares de sécurité
+const { 
+  detectInjectionAttempts,
+  preventPathTraversal,
+  limitRequestSize,
+  validateSecurityHeaders,
+  sanitizeInputs,
+  preventTimingAttacks
+} = require('./middleware/security');
+
+// Routes
+const authRoutes = require('./routes/auth');
+const notesRoutes = require('./routes/notes');
+const sharesRoutes = require('./routes/shares');
+const internalRoutes = require('./routes/internal');
+
+// Parse les arguments de ligne de commande
+const args = process.argv.slice(2);
+const portArg = args.find(arg => arg.startsWith('--port='));
+const nameArg = args.find(arg => arg.startsWith('--name='));
+const peerArg = args.find(arg => arg.startsWith('--peer='));
+
+const PORT = portArg ? parseInt(portArg.split('=')[1]) : config.server.port;
+const SERVER_NAME = nameArg ? nameArg.split('=')[1] : config.server.name;
+const PEER_URL = peerArg ? peerArg.split('=')[1] : config.server.peerUrl;
+
+// Crée l'application Express
+const app = express();
+
+// ============= CONFIGURATION SÉCURITÉ =============
+
+// Helmet - Headers de sécurité HTTP
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'"],
+      fontSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'"],
+      frameSrc: ["'none'"]
+    }
+  },
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true
+  },
+  noSniff: true,
+  xssFilter: true,
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' }
+}));
+
+// CORS
+app.use(cors(config.cors));
+
+// Rate limiting global
+const limiter = rateLimit(config.rateLimit);
+app.use('/api/', limiter);
+
+// Parse JSON avec limite de taille
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
+
+// Middlewares de sécurité personnalisés
+app.use(preventTimingAttacks);
+app.use(sanitizeInputs);
+app.use(detectInjectionAttempts);
+app.use(preventPathTraversal);
+app.use(limitRequestSize(1024 * 1024)); // 1MB max
+app.use(validateSecurityHeaders);
+
+// Logging des requêtes
+app.use((req, res, next) => {
+  logger.info('Request received', {
+    method: req.method,
+    path: req.path,
+    ip: req.ip,
+    userAgent: req.get('user-agent')
+  });
+  next();
+});
+
+// ============= ROUTES =============
+
+// Route de santé publique
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'healthy', 
+    serverName: SERVER_NAME,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Routes API
+app.use('/api/auth', authRoutes);
+app.use('/api/notes', notesRoutes);
+app.use('/api/shares', sharesRoutes);
+app.use('/api/internal', internalRoutes);
+
+// Serve le frontend statique
+app.use(express.static('public'));
+
+// Route catch-all pour le frontend
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api/')) {
+    return next();
+  }
+  res.sendFile('index.html', { root: 'public' });
+});
+
+// ============= GESTION D'ERREURS =============
+
+// 404 - Route non trouvée
+app.use((req, res) => {
+  logger.warn('Route not found', { 
+    method: req.method,
+    path: req.path,
+    ip: req.ip
+  });
+  res.status(404).json({ 
+    error: 'Route not found' 
+  });
+});
+
+// Gestionnaire d'erreurs global
+app.use((err, req, res, next) => {
+  logger.error('Unhandled error', { 
+    error: err.message,
+    stack: err.stack,
+    path: req.path,
+    ip: req.ip
+  });
+
+  // Ne pas exposer les détails d'erreur en production
+  res.status(err.status || 500).json({ 
+    error: process.env.NODE_ENV === 'production' 
+      ? 'Internal server error' 
+      : err.message 
+  });
+});
+
+// ============= DÉMARRAGE =============
+
+// Initialise le service de réplication
+const replicationService = new ReplicationService(SERVER_NAME, PEER_URL);
+app.replicationService = replicationService;
+
+// Démarre le serveur
+app.listen(PORT, () => {
+  logger.info('Server started', { 
+    serverName: SERVER_NAME,
+    port: PORT,
+    peerUrl: PEER_URL || 'Not configured',
+    environment: process.env.NODE_ENV || 'development'
+  });
+
+  console.log(`
+╔════════════════════════════════════════════╗
+║       SecureNotes Server Started          ║
+╚════════════════════════════════════════════╝
+
+Server Name: ${SERVER_NAME}
+Port: ${PORT}
+Peer: ${PEER_URL || 'Not configured'}
+
+API Base URL: http://localhost:${PORT}/api
+Frontend URL: http://localhost:${PORT}
+
+Health Check: http://localhost:${PORT}/health
+
+Security Features:
+✓ JWT Authentication
+✓ AES-256-GCM Encryption
+✓ Rate Limiting
+✓ Input Validation
+✓ Injection Protection
+✓ Audit Logging
+${PEER_URL ? '✓ Active-Active Replication' : '⚠ Replication disabled (no peer)'}
+
+Press Ctrl+C to stop the server.
+  `);
+
+  // Démarre la réplication si un pair est configuré
+  if (PEER_URL) {
+    setTimeout(() => {
+      replicationService.start();
+    }, 5000); // Attend 5 secondes pour que les deux serveurs démarrent
+  }
+});
+
+// Gestion de l'arrêt gracieux
+process.on('SIGINT', () => {
+  logger.info('Server shutting down...');
+  replicationService.stop();
+  process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+  logger.info('Server shutting down...');
+  replicationService.stop();
+  process.exit(0);
+});
+
+module.exports = app;
