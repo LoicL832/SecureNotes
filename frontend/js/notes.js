@@ -6,6 +6,8 @@ class NotesManager {
         this.isEditing = false;
         this.initElements();
         this.attachEvents();
+        // Charge les notes au démarrage
+        this.loadNotes();
     }
 
     initElements() {
