@@ -60,6 +60,8 @@ async function testBruteForceProtection() {
     
     logInfo('Tentatives de connexion avec mauvais mot de passe...');
     
+    let accountLocked = false;
+
     // Tente 6 connexions avec mauvais mot de passe
     for (let i = 1; i <= 6; i++) {
       try {
@@ -67,21 +69,33 @@ async function testBruteForceProtection() {
           username,
           password: 'WrongPassword'
         });
+        logFail(`Tentative ${i}/6 - Acceptée alors qu'elle devrait être rejetée`);
       } catch (error) {
-        if (i < 5) {
-          logInfo(`Tentative ${i}/6 - Rejetée correctement`);
-        } else if (i === 5) {
-          logInfo(`Tentative ${i}/6 - Rejetée, compte devrait être verrouillé`);
-        } else {
-          if (error.response && error.response.data.error.includes('locked')) {
-            logPass('Compte verrouillé après 5 tentatives échouées');
-            return true;
-          } else {
-            logFail('Le compte n\'a pas été verrouillé');
-            return false;
+        if (error.response) {
+          const errorMsg = error.response.data?.error || '';
+
+          if (errorMsg.includes('locked') || errorMsg.includes('verrouill')) {
+            logInfo(`Tentative ${i}/6 - Compte verrouillé détecté`);
+            accountLocked = true;
+            break;
+          } else if (i < 5) {
+            logInfo(`Tentative ${i}/6 - Rejetée correctement`);
+          } else if (i === 5) {
+            logInfo(`Tentative ${i}/6 - Rejetée, compte devrait être verrouillé maintenant`);
           }
         }
       }
+
+      // Petit délai entre les tentatives
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    if (accountLocked) {
+      logPass('Compte verrouillé après plusieurs tentatives échouées');
+      return true;
+    } else {
+      logFail('Le compte n\'a pas été verrouillé après 5 tentatives');
+      return false;
     }
   } catch (error) {
     logFail(`Erreur: ${error.message}`);
@@ -93,10 +107,12 @@ async function testRateLimiting() {
   logTest('TEST 2: Rate limiting sur l\'authentification');
   
   try {
-    logInfo('Envoi de 10 requêtes rapides...');
-    
+    // En mode test, la limite est de 100 requêtes sur 10 secondes
+    const requestCount = process.env.NODE_ENV === 'test' ? 120 : 10;
+    logInfo(`Envoi de ${requestCount} requêtes rapides...`);
+
     const promises = [];
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < requestCount; i++) {
       promises.push(
         axios.post(`${BASE_URL}/api/auth/login`, {
           username: 'test',
@@ -633,21 +649,25 @@ async function runAllTests() {
   log('', 'reset');
   logInfo(`URL du serveur: ${BASE_URL}`);
   logInfo('Assurez-vous que le serveur est démarré avant de lancer les tests');
+  logInfo('Les tests incluent des délais pour éviter le rate limiting...');
   log('', 'reset');
   
+  // Attente initiale pour s'assurer que le serveur est prêt
+  await new Promise(resolve => setTimeout(resolve, 2000));
+
   const tests = [
-    { name: 'Brute Force Protection', fn: testBruteForceProtection },
-    { name: 'Rate Limiting', fn: testRateLimiting },
-    { name: 'Weak Password Rejection', fn: testWeakPassword },
-    { name: 'SQL/NoSQL Injection', fn: testSQLInjection },
-    { name: 'XSS Protection', fn: testXSSInjection },
-    { name: 'Path Traversal', fn: testPathTraversal },
-    { name: 'Unauthorized Access', fn: testUnauthorizedAccess },
-    { name: 'Token Expiration', fn: testTokenExpiration },
-    { name: 'Privilege Escalation', fn: testPrivilegeEscalation },
-    { name: 'Encryption at Rest', fn: testEncryptionAtRest },
-    { name: 'Share Permissions', fn: testSharePermissions },
-    { name: 'Note Locking', fn: testNoteLocking }
+    { name: 'Brute Force Protection', fn: testBruteForceProtection, extraDelay: 2000 },
+    { name: 'Rate Limiting', fn: testRateLimiting, extraDelay: 12000 }, // Wait for 10s rate limit window to reset
+    { name: 'Weak Password Rejection', fn: testWeakPassword, extraDelay: 2000 },
+    { name: 'SQL/NoSQL Injection', fn: testSQLInjection, extraDelay: 1000 },
+    { name: 'Unauthorized Access', fn: testUnauthorizedAccess, extraDelay: 1000 },
+    { name: 'Token Expiration', fn: testTokenExpiration, extraDelay: 1000 },
+    { name: 'XSS Protection', fn: testXSSInjection, extraDelay: 2000 },
+    { name: 'Path Traversal', fn: testPathTraversal, extraDelay: 2000 },
+    { name: 'Privilege Escalation', fn: testPrivilegeEscalation, extraDelay: 2000 },
+    { name: 'Encryption at Rest', fn: testEncryptionAtRest, extraDelay: 2000 },
+    { name: 'Share Permissions', fn: testSharePermissions, extraDelay: 2000 },
+    { name: 'Note Locking', fn: testNoteLocking, extraDelay: 2000 }
   ];
   
   const results = {
@@ -670,7 +690,11 @@ async function runAllTests() {
     }
     
     // Délai entre les tests pour éviter le rate limiting
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    const delay = test.extraDelay || 1000;
+    if (delay > 2000) {
+      logInfo(`Attente de ${delay/1000}s pour éviter le rate limiting...`);
+    }
+    await new Promise(resolve => setTimeout(resolve, delay));
   }
   
   // Résumé

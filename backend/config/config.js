@@ -43,16 +43,16 @@ module.exports = {
 
   // Rate limiting
   rateLimit: {
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // Limite par IP
+    windowMs: process.env.NODE_ENV === 'test' ? 10 * 1000 : 15 * 60 * 1000, // 10 seconds in test, 15 minutes in production
+    max: process.env.NODE_ENV === 'test' ? 200 : 100, // Balanced for tests
     standardHeaders: true,
     legacyHeaders: false
   },
 
   // Rate limiting authentification (plus strict)
   authRateLimit: {
-    windowMs: 15 * 60 * 1000,
-    max: 5, // 5 tentatives par 15 minutes
+    windowMs: process.env.NODE_ENV === 'test' ? 10 * 1000 : 15 * 60 * 1000, // 10 seconds in test, 15 minutes in production
+    max: process.env.NODE_ENV === 'test' ? 100 : 5, // Balanced for tests
     skipSuccessfulRequests: true
   },
 

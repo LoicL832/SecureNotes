@@ -48,7 +48,13 @@ function detectInjectionAttempts(req, res, next) {
 function preventPathTraversal(req, res, next) {
   const checkPath = (value) => {
     if (typeof value === 'string') {
-      if (value.includes('..') || value.includes('~')) {
+      // Décode l'URL pour détecter les tentatives encodées
+      const decoded = decodeURIComponent(value);
+
+      // Vérifie les patterns de traversal (normal et encodé)
+      if (value.includes('..') || value.includes('~') ||
+          decoded.includes('..') || decoded.includes('~') ||
+          value.match(/%2e%2e/i) || value.match(/%2f/i)) {
         return true;
       }
     }
