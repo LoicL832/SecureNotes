@@ -671,45 +671,45 @@ end note
 
 ### Stéréotypes UMLSec appliqués :
 
-1. **<<secrecy>>** : Garantit la confidentialité
+1. <<**secrecy**>> : Garantit la confidentialité
    - Connexion (credentials)
    - Chiffrement/déchiffrement des notes
    - Stockage des mots de passe
 
-2. **<<integrity>>** : Garantit l'intégrité
+2. <<**integrity**>> : Garantit l'intégrité
    - Création/modification de notes
    - Logs d'audit
    - Réplication des données
 
-3. **<<critical>>** : Ressources critiques nécessitant protection maximale
+3. <<**critical**>> : Ressources critiques nécessitant protection maximale
    - Système d'authentification
    - Gestion des permissions
    - Verrouillage de notes
    - Serveurs et composants sensibles
 
-4. **<<secure links>>** : Communications sécurisées
+4. <<**secure links**>> : Communications sécurisées
    - HTTPS entre client et serveur
    - Authentification inter-serveurs
 
-5. **<<secure dependency>>** : Dépendances sécurisées entre composants
+5. <<**secure dependency**>> : Dépendances sécurisées entre composants
    - Utilisation de JWT
    - Appels aux utilitaires crypto
    - Réplication authentifiée
 
-6. **<<encrypted>>** : Données chiffrées
+6. <<**encrypted**>> : Données chiffrées
    - Stockage des notes
    - Service de chiffrement
    - Fichiers .enc
 
-7. **<<authenticated>>** : Accès nécessitant authentification
+7. <<**authenticated**>> : Accès nécessitant authentification
    - Utilisateur connecté
    - Routes protégées
 
-8. **<<firewall>>** : Protection périmétrique
+8. <<**firewall**>> : Protection périmétrique
    - Load balancer
    - Filtrage réseau
 
-9. **<<encrypted storage>>** : Stockage chiffré
+9. <<**encrypted storage**>> : Stockage chiffré
    - Système de fichiers
    - Notes sur disque
 
