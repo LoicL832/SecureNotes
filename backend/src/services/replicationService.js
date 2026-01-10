@@ -1,8 +1,14 @@
 const axios = require('axios');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const config = require('../../config/config');
 const logger = require('../utils/logger');
+
+// Agent HTTPS pour accepter les certificats auto-signés (tests locaux uniquement)
+const httpsAgent = new https.Agent({
+  rejectUnauthorized: false // Accepte les certificats auto-signés
+});
 
 /**
  * Service de réplication active-active entre serveurs
@@ -72,6 +78,7 @@ class ReplicationService {
         },
         {
           timeout: 10000,
+          httpsAgent: httpsAgent, // Accepte les certificats auto-signés
           headers: {
             'X-Internal-Secret': config.jwt.secret // Authentification inter-serveurs
           }
@@ -383,7 +390,10 @@ class ReplicationService {
     try {
       const response = await axios.get(
         `${this.peerUrl}/api/internal/health`,
-        { timeout: 5000 }
+        {
+          timeout: 5000,
+          httpsAgent: httpsAgent // Accepte les certificats auto-signés
+        }
       );
 
       return { 

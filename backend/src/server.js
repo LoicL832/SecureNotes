@@ -1,4 +1,8 @@
 const express = require('express');
+const https = require('https');
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
 const helmet = require('helmet');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
@@ -43,9 +47,9 @@ app.use(helmet({
     directives: {
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"], // Permet inline scripts pour tests locaux
       imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'"],
+      connectSrc: ["'self'", "http://localhost:3001", "https://localhost:3001"], // Permet connexions au backend
       fontSrc: ["'self'"],
       objectSrc: ["'none'"],
       mediaSrc: ["'self'"],
@@ -110,7 +114,6 @@ app.use('/api/shares', sharesRoutes);
 app.use('/api/internal', internalRoutes);
 
 // Serve le frontend statique
-const path = require('path');
 const frontendPath = path.join(__dirname, '../../frontend');
 app.use(express.static(frontendPath));
 
@@ -137,20 +140,36 @@ app.use((req, res) => {
 });
 
 // Gestionnaire d'erreurs global
+// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
-  logger.error('Unhandled error', { 
+  // Log complet de l'erreur (seulement côté serveur)
+  logger.error('Unhandled error', {
     error: err.message,
-    stack: err.stack,
+    // Stack trace uniquement en développement dans les logs
+    ...(process.env.NODE_ENV !== 'production' ? { stack: err.stack } : {}),
     path: req.path,
-    ip: req.ip
+    method: req.method,
+    ip: req.ip,
+    userId: req.user?.id
   });
 
-  // Ne pas exposer les détails d'erreur en production
-  res.status(err.status || 500).json({ 
-    error: process.env.NODE_ENV === 'production' 
-      ? 'Internal server error' 
-      : err.message 
-  });
+  // Détermine le code de statut
+  const statusCode = err.status || err.statusCode || 500;
+
+  // Réponse sécurisée au client (sans détails système)
+  const errorResponse = {
+    error: statusCode === 500
+      ? 'Internal server error'
+      : err.message || 'An error occurred',
+    statusCode
+  };
+
+  // En développement uniquement, on peut ajouter plus de détails (mais jamais de stack trace)
+  if (process.env.NODE_ENV === 'development' && statusCode !== 500) {
+    errorResponse.details = err.message;
+  }
+
+  res.status(statusCode).json(errorResponse);
 });
 
 // ============= DÉMARRAGE =============
@@ -159,11 +178,43 @@ app.use((err, req, res, next) => {
 const replicationService = new ReplicationService(SERVER_NAME, PEER_URL);
 app.replicationService = replicationService;
 
+// Crée le serveur HTTPS ou HTTP selon la configuration
+let server;
+if (config.server.https.enabled) {
+  try {
+    const keyPath = path.resolve(__dirname, '..', config.server.https.keyPath);
+    const certPath = path.resolve(__dirname, '..', config.server.https.certPath);
+
+    // Vérifie que les certificats existent
+    if (!fs.existsSync(keyPath) || !fs.existsSync(certPath)) {
+      logger.warn('SSL certificates not found. Run: cd backend/certs && ./generate-cert.sh');
+      logger.warn('Starting HTTP server instead...');
+      server = http.createServer(app);
+    } else {
+      const httpsOptions = {
+        key: fs.readFileSync(keyPath),
+        cert: fs.readFileSync(certPath)
+      };
+      server = https.createServer(httpsOptions, app);
+      logger.info('HTTPS enabled', { keyPath, certPath });
+    }
+  } catch (error) {
+    logger.error('Failed to load SSL certificates', { error: error.message });
+    logger.warn('Starting HTTP server instead...');
+    server = http.createServer(app);
+  }
+} else {
+  server = http.createServer(app);
+  logger.warn('HTTPS disabled - Running in HTTP mode (tests locaux uniquement)');
+}
+
 // Démarre le serveur
-app.listen(PORT, () => {
-  logger.info('Server started', { 
+server.listen(PORT, () => {
+  const protocol = server instanceof https.Server ? 'https' : 'http';
+  logger.info('Server started', {
     serverName: SERVER_NAME,
     port: PORT,
+    protocol,
     peerUrl: PEER_URL || 'Not configured',
     environment: process.env.NODE_ENV || 'development'
   });
@@ -171,25 +222,34 @@ app.listen(PORT, () => {
   console.log(`
 ╔════════════════════════════════════════════╗
 ║       SecureNotes Server Started          ║
+║          (Tests Locaux - UMLsec)          ║
 ╚════════════════════════════════════════════╝
 
 Server Name: ${SERVER_NAME}
 Port: ${PORT}
+Protocol: ${protocol.toUpperCase()}
 Peer: ${PEER_URL || 'Not configured'}
 
-API Base URL: http://localhost:${PORT}/api
-Frontend URL: http://localhost:${PORT}
+API Base URL: ${protocol}://localhost:${PORT}/api
+Frontend URL: ${protocol}://localhost:${PORT}
 
-Health Check: http://localhost:${PORT}/health
+Health Check: ${protocol}://localhost:${PORT}/health
 
-Security Features:
+Security Features (Conformité UMLsec) :
 ✓ JWT Authentication
 ✓ AES-256-GCM Encryption
+${protocol === 'https' ? '✓ HTTPS/TLS Encryption (certificats auto-signés)' : '⚠ HTTPS DISABLED'}
 ✓ Rate Limiting
 ✓ Input Validation
 ✓ Injection Protection
+✓ Path Traversal Protection
+✓ File Permissions (600/700)
+✓ Physical Locking (.lock files)
+✓ Sanitized Logs ([REDACTED])
 ✓ Audit Logging
 ${PEER_URL ? '✓ Active-Active Replication' : '⚠ Replication disabled (no peer)'}
+
+${protocol === 'https' ? '⚠️  Certificat auto-signé : Acceptez l\'avertissement du navigateur' : ''}
 
 Press Ctrl+C to stop the server.
   `);

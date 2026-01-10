@@ -100,7 +100,7 @@ function checkOwnership(req, res, next) {
       path: req.path,
       ip: req.ip
     });
-    return res.status(403).json({ 
+    return res.status(403).json({
       error: 'You can only access your own resources' 
     });
   }
@@ -108,8 +108,66 @@ function checkOwnership(req, res, next) {
   next();
 }
 
+/**
+ * Middleware de vérification stricte de propriété de note
+ * Utilisé pour les opérations sensibles (lecture, modification, suppression)
+ */
+function checkNoteOwnership(noteService) {
+  return async (req, res, next) => {
+    try {
+      const noteId = req.params.id;
+      const userId = req.user.id;
+
+      if (!noteId) {
+        return res.status(400).json({ error: 'Note ID is required' });
+      }
+
+      // Vérifie que la note existe et appartient à l'utilisateur
+      const noteMetadata = noteService.getNoteMetadata(userId, noteId);
+
+      if (!noteMetadata) {
+        logger.security('Unauthorized note access attempt', {
+          userId,
+          noteId,
+          path: req.path,
+          ip: req.ip
+        });
+        return res.status(403).json({
+          error: 'Forbidden: Note not found or you do not own this note'
+        });
+      }
+
+      // Vérifie explicitement que l'owner correspond
+      if (noteMetadata.owner !== userId) {
+        logger.security('Note ownership violation detected', {
+          userId,
+          noteId,
+          actualOwner: noteMetadata.owner,
+          path: req.path,
+          ip: req.ip
+        });
+        return res.status(403).json({
+          error: 'Forbidden: You do not have permission to access this note'
+        });
+      }
+
+      // Attache les métadonnées à la requête pour éviter une double lecture
+      req.noteMetadata = noteMetadata;
+      next();
+    } catch (error) {
+      logger.error('Ownership check error', {
+        error: error.message,
+        userId: req.user?.id,
+        noteId: req.params.id
+      });
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  };
+}
+
 module.exports = {
   authenticate,
   authorize,
-  checkOwnership
+  checkOwnership,
+  checkNoteOwnership
 };

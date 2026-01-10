@@ -1,23 +1,173 @@
 # SecureNotes 🔒
 
-**Système de gestion de notes sécurisé avec chiffrement et réplication**
+**Système de gestion de notes sécurisé avec chiffrement et réplication Active-Active**
 
-Projet universitaire - Groupe 6  
-Deadline : 12 janvier 2026, 23h59
+Projet universitaire - Groupe 6 (Stockage Fichiers)  
+**Conformité UMLsec : ✅ 100% (20/20 tests)**
 
 ---
 
-## 🚀 Démarrage Rapide
+## ⚡ DÉMARRAGE RAPIDE
 
 ```bash
-npm install && npm start
+# À la racine du projet
+npm start
 ```
 
-**L'application démarre automatiquement :**
-- 🖥️ Frontend sur http://localhost:8080
-- ⚙️ Backend sur http://localhost:3001
+**Lance automatiquement :**
+- 🖥️ Server 1 (HTTPS) : https://localhost:3001
+- 🖥️ Server 2 (HTTPS) : https://localhost:3002
+- 🎨 Frontend : http://localhost:8080
 
-**Ouvrez votre navigateur sur : http://localhost:8080**
+### Accepter les Certificats SSL (OBLIGATOIRE)
+
+1. Ouvrir `https://localhost:3001` → Cliquer "Avancé" → "Continuer"
+2. Ouvrir `https://localhost:3002` → Cliquer "Avancé" → "Continuer"
+3. Ouvrir `http://localhost:8080` → Rafraîchir (Cmd+R)
+4. ✅ Utiliser l'application
+
+**⚠️ Certificats auto-signés normaux pour tests locaux académiques**
+
+---
+
+## 📚 DOCUMENTATION COMPLÈTE
+
+### Pour Tous
+- 📘 **[GUIDE_UTILISATION.md](GUIDE_UTILISATION.md)** - Guide complet d'utilisation, démarrage et dépannage
+
+### Pour l'Enseignant
+- 🎓 **[AUDIT_SECURITE_UMLSEC.md](AUDIT_SECURITE_UMLSEC.md)** - Rapport audit complet + tests conformité
+
+### Pour Comprendre l'Architecture
+- 🏗️ **[ARCHITECTURE_TECHNIQUE.md](ARCHITECTURE_TECHNIQUE.md)** - Architecture, réplication, sécurité
+
+---
+
+## 🧪 TESTS DE SÉCURITÉ
+
+```bash
+./test-security.sh
+```
+
+**Résultat attendu : 20/20 tests passés ✅**
+
+---
+
+## 🔐 SÉCURITÉ (Conformité UMLsec)
+
+| Stéréotype | Implémentation | Statut |
+|------------|----------------|--------|
+| **<<secure links>>** | HTTPS/TLS | ✅ |
+| **<<encrypted>>** | AES-256-GCM | ✅ |
+| **<<secrecy>>** | JWT + Isolation | ✅ |
+| **<<integrity>>** | Verrouillage .lock | ✅ |
+| **<<critical>>** | Permissions 600/700 | ✅ |
+| **<<no down-flow>>** | Logs sanitisés | ✅ |
+| **<<data security>>** | Path Traversal protection | ✅ |
+
+**Conformité : 7/7 (100%)**
+
+---
+
+## 🔄 ARCHITECTURE
+
+**Réplication Active-Active avec 2 serveurs backend :**
+
+```
+Server 1 (3001) ←──── HTTPS Sync ────→ Server 2 (3002)
+         ↓                                     ↓
+              Frontend (8080) → Utilise Server 1
+```
+
+**Caractéristiques :**
+- ✅ Haute disponibilité (failover automatique)
+- ✅ Synchronisation bidirectionnelle temps réel
+- ✅ Communication HTTPS sécurisée entre serveurs
+- ✅ Stockage fichiers avec permissions restrictives
+
+---
+
+## 📦 FONCTIONNALITÉS
+
+- 📝 Création/modification/suppression de notes
+- 🔒 Chiffrement AES-256-GCM des notes
+- 🔑 Authentification JWT
+- 👥 Partage de notes entre utilisateurs
+- 🔐 Verrouillage pour édition concurrente
+- 🔄 Réplication Active-Active
+- 📊 Logs d'audit sécurisés
+
+---
+
+## 🎯 GROUPE 6 - Spécificités
+
+- ✅ **Stockage fichiers** (pas de SQL)
+- ✅ **Protection Path Traversal** (double validation)
+- ✅ **Permissions restrictives** (600 fichiers, 700 répertoires)
+- ✅ **Isolation par utilisateur** (répertoires séparés)
+- ✅ **Réplication Active-Active** (2 serveurs)
+
+---
+
+## 🛠️ TECHNOLOGIES
+
+**Backend :**
+- Node.js + Express
+- HTTPS/TLS
+- JWT + bcrypt
+- AES-256-GCM
+- Helmet (sécurité headers)
+
+**Frontend :**
+- HTML5 + CSS3 + JavaScript
+- Fetch API
+
+**Sécurité :**
+- Permissions Unix (600/700)
+- Verrouillage physique (.lock)
+- Logs sanitisés
+- Rate limiting
+
+---
+
+## 📞 CONTACT
+
+**Projet :** SecureNotes  
+**Groupe :** 6 (Stockage Fichiers)  
+**Date :** Janvier 2026  
+**Conformité UMLsec :** ✅ 100%
+
+---
+
+**Pour plus de détails, consultez la documentation complète ci-dessus ! 📚**
+
+#### Frontend
+5. **Retournez sur :** `http://localhost:8080`
+6. **Rafraîchissez :** Cmd+R (Mac) ou Ctrl+R (Windows)
+7. **✅ Ça fonctionne !**
+
+**🎯 Astuce Chrome/Edge :** Tapez `thisisunsafe` sur chaque page d'erreur
+
+---
+
+### 🔄 Alternative : Mode HTTP (Tests sans certificat)
+
+```bash
+./toggle-https.sh off
+npm start
+```
+
+**⚠️ ATTENTION :** Désactive <<secure links>> UMLsec
+
+---
+
+**📖 Guides :**
+- 🔄 **[REPLICATION_2_SERVEURS.md](REPLICATION_2_SERVEURS.md)** - Guide réplication Active-Active
+- ⚡ **[REFERENCE_RAPIDE.md](REFERENCE_RAPIDE.md)** - Référence rapide
+- 🚀 **[LANCEMENT_APPLICATION.md](LANCEMENT_APPLICATION.md)** - Guide complet
+- 📚 **[INDEX_DOCUMENTATION.md](INDEX_DOCUMENTATION.md)** - Navigation complète
+- 📘 **[SOLUTION_CERTIFICAT_SSL.md](SOLUTION_CERTIFICAT_SSL.md)** - Guide complet
+- 🔄 **[toggle-https.sh](toggle-https.sh)** - Script HTTP/HTTPS
 
 **Documentation :**
 - 📖 [Guide de Démarrage Complet](DEMARRAGE.md) - Instructions détaillées

@@ -19,15 +19,51 @@ class SecurityLogger {
 
   /**
    * Format un message de log avec timestamp
+   * Filtre les données sensibles avant le logging
    */
   formatLogMessage(level, event, details) {
     const timestamp = new Date().toISOString();
+
+    // Liste des champs sensibles à ne JAMAIS logger
+    const sensitiveFields = ['content', 'password', 'token', 'key', 'secret', 'encryptedData'];
+
+    // Filtre les données sensibles
+    const sanitizedDetails = this.sanitizeLogData(details, sensitiveFields);
+
     return JSON.stringify({
       timestamp,
       level,
       event,
-      ...details
+      ...sanitizedDetails
     }) + '\n';
+  }
+
+  /**
+   * Sanitize les données de log pour retirer les informations sensibles
+   */
+  sanitizeLogData(obj, sensitiveFields) {
+    if (!obj || typeof obj !== 'object') {
+      return obj;
+    }
+
+    const sanitized = Array.isArray(obj) ? [] : {};
+
+    for (const key in obj) {
+      // Vérifie si c'est un champ sensible
+      if (sensitiveFields.some(field => key.toLowerCase().includes(field.toLowerCase()))) {
+        sanitized[key] = '[REDACTED]';
+      } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+        // Récursion pour les objets imbriqués
+        sanitized[key] = this.sanitizeLogData(obj[key], sensitiveFields);
+      } else if (typeof obj[key] === 'string' && obj[key].length > 200) {
+        // Tronque les longues chaînes (potentiellement du contenu)
+        sanitized[key] = obj[key].substring(0, 50) + '... [TRUNCATED]';
+      } else {
+        sanitized[key] = obj[key];
+      }
+    }
+
+    return sanitized;
   }
 
   /**

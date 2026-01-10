@@ -6,9 +6,9 @@
   "scripts": {
     "init": "node init.js",
     "postinstall": "node init.js",
-    "start": "node src/server.js --port=3001 --name=server1 --peer=http://localhost:3002 & node src/server.js --port=3002 --name=server2 --peer=http://localhost:3001",
-    "server1": "node src/server.js --port=3001 --name=server1 --peer=http://localhost:3002",
-    "server2": "node src/server.js --port=3002 --name=server2 --peer=http://localhost:3001",
+    "start": "node src/server.js --port=3001 --name=server1 --peer=https://localhost:3002 & node src/server.js --port=3002 --name=server2 --peer=https://localhost:3001",
+    "server1": "node src/server.js --port=3001 --name=server1 --peer=https://localhost:3002",
+    "server2": "node src/server.js --port=3002 --name=server2 --peer=https://localhost:3001",
     "test": "NODE_ENV=test node tests/security-tests.js",
     "dev": "node src/server.js --port=3001 --name=server1"
   },

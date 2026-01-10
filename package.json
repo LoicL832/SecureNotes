@@ -4,14 +4,14 @@
   "description": "Système de stockage sécurisé de notes avec réplication - Projet restructuré",
   "scripts": {
     "postinstall": "cd backend && npm install && cd ../frontend && npm install",
-    "start": "concurrently \"npm run server1\" \"npm run server2\" \"npm run dev:frontend\" --names \"backend,frontend\" --prefix-colors \"blue,green\" --kill-others",
+    "start": "concurrently \"npm run server1\" \"npm run server2\" \"npm run dev:frontend\" --names \"server1,server2,frontend\" --prefix-colors \"blue,cyan,green\" --kill-others",
     "server1": "cd backend && npm run server1",
     "server2": "cd backend && npm run server2",
     "test": "cd backend && npm test",
     "dev:backend": "cd backend && npm run dev",
     "dev:frontend": "cd frontend && npm start",
     "start:backend-only": "cd backend && npm start",
-    "start:both-servers": "concurrently \"npm run server1\" \"npm run server2\" \"npm run dev:frontend\" --names \"server1,server2,frontend\" --prefix-colors \"blue,cyan,green\" --kill-others"
+    "start:single": "concurrently \"npm run start:backend-only\" \"npm run dev:frontend\" --names \"backend,frontend\" --prefix-colors \"blue,green\" --kill-others"
   },
   "keywords": [
     "security",

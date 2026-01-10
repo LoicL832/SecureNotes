@@ -1,0 +1,12 @@
+# Ignorer tous les fichiers de certificats et clés
+*.pem
+*.key
+*.crt
+*.csr
+*.p12
+*.pfx
+
+# Garder le README et le script de génération
+!README.md
+!generate-cert.sh
+

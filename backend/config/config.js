@@ -15,18 +15,28 @@ module.exports = {
   server: {
     port: process.env.PORT || 3001,
     name: process.env.SERVER_NAME || 'server1',
-    peerUrl: process.env.PEER_URL || null
+    peerUrl: process.env.PEER_URL || null,
+    // Configuration HTTPS/TLS (certificats auto-signés pour tests locaux)
+    https: {
+      enabled: process.env.HTTPS_ENABLED !== 'false', // true par défaut
+      keyPath: './certs/private-key.pem',
+      certPath: './certs/certificate.pem'
+    }
   },
 
   // Configuration CORS
   cors: {
     origin: function (origin, callback) {
-      // Liste des origines autorisées
+      // Liste des origines autorisées (HTTP et HTTPS pour tests locaux)
       const allowedOrigins = [
         'http://localhost:8080',
         'http://127.0.0.1:8080',
+        'https://localhost:8080',
+        'https://127.0.0.1:8080',
         'http://localhost:3001',
-        'http://127.0.0.1:3001'
+        'http://127.0.0.1:3001',
+        'https://localhost:3001',
+        'https://127.0.0.1:3001'
       ];
 
       // Permet les requêtes sans origine (comme curl, Postman)
