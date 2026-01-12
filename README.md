@@ -307,7 +307,8 @@ node src/server.js --port=3003 --name=server3 --peer=http://localhost:3001
 **Lancer les tests de sécurité :**
 
 ```bash
-npm test
+./run-tests.sh
+./test-security.sh
 ```
 
 ---
@@ -542,7 +543,7 @@ SecureNotes/
 
 ### Diagrammes UMLSec
 
-Voir [docs/UMLSec-Diagrams.md](docs/UMLSec-Diagrams.md) pour :
+Voir [docs/Diagrammes.pdf](docs/Diagrammes.pdf) pour :
 
 - Diagramme de cas d'utilisation
 - Diagramme de composants
