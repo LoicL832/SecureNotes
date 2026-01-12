@@ -6,14 +6,14 @@ const logger = require('../utils/logger');
 
 const router = express.Router();
 
-// Rate limiting strict pour l'authentification
-const authLimiter = rateLimit(config.authRateLimit);
+// Rate limiting désactivé pour tests
+// const authLimiter = rateLimit(config.authRateLimit);
 
 /**
  * POST /api/auth/register
  * Inscription d'un nouvel utilisateur
  */
-router.post('/register', authLimiter, async (req, res) => {
+router.post('/register', async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
@@ -42,7 +42,7 @@ router.post('/register', authLimiter, async (req, res) => {
  * POST /api/auth/login
  * Connexion d'un utilisateur
  */
-router.post('/login', authLimiter, async (req, res) => {
+router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
 

@@ -135,6 +135,43 @@ Press Ctrl+C to stop the server.
 
 ## Accéder à l'interface web
 
+### Configuration HTTPS (Obligatoire pour la sécurité)
+
+#### Génération des certificats SSL auto-signés
+
+**Sur Windows (PowerShell)** :
+```powershell
+cd backend\certs
+node generate-cert.js
+cd ..\..
+```
+
+**Sur Linux/Mac** :
+```bash
+cd backend/certs
+./generate-cert.sh
+cd ../..
+```
+
+#### Accepter les certificats dans le navigateur
+
+**Sur Windows avec Firefox** :
+1. Démarrer l'application : `npm start`
+2. Ouvrir `https://localhost:3001` dans Firefox
+3. Vous verrez : **"Attention : risque probable de sécurité"**
+4. Cliquer sur **"Avancé"**
+5. Cliquer sur **"Accepter le risque et continuer"**
+6. Répéter pour `https://localhost:3002`
+
+**Sur Windows avec Chrome/Edge** :
+1. Ouvrir `https://localhost:3001`
+2. Vous verrez : **"Votre connexion n'est pas privée"**
+3. Cliquer sur **"Paramètres avancés"**
+4. Cliquer sur **"Continuer vers localhost (dangereux)"**
+5. Répéter pour `https://localhost:3002`
+
+**Important** : Ces certificats sont auto-signés et uniquement pour les tests locaux. En production, utilisez des certificats valides (Let's Encrypt).
+
 ### Ouvrir le navigateur
 
 1. Ouvrir votre navigateur (Chrome, Firefox, Edge)

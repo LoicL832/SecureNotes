@@ -202,26 +202,43 @@ npm install
 
 Cela installe automatiquement les dépendances du backend ET du frontend.
 
-3. Lancer le serveur 1 (avec frontend intégré)
+3. Générer les certificats SSL
 
-```bash
-npm run server1
+**Sur Windows (PowerShell)** :
+```powershell
+cd backend\certs
+node generate-cert.js
+cd ..\..
 ```
 
-Serveur disponible sur : `http://localhost:3001`  
-Frontend accessible sur : `http://localhost:3001`
-
-4. Lancer le serveur 2 (dans un autre terminal)
-
+**Sur Linux/Mac** :
 ```bash
-npm run server2
+cd backend/certs
+./generate-cert.sh
+cd ../..
 ```
 
-Serveur disponible sur : `http://localhost:3002`
+4. Lancer l'application
 
-5. Accéder à l'interface web
+```bash
+npm start
+```
 
-Ouvrir le navigateur : `http://localhost:3001`
+5. Accepter les certificats SSL dans le navigateur
+
+**Sur Windows avec Firefox** :
+- Ouvrir `https://localhost:3001`
+- Cliquer **"Avancé"** → **"Accepter le risque et continuer"**
+- Répéter pour `https://localhost:3002`
+
+**Sur Windows avec Chrome/Edge** :
+- Ouvrir `https://localhost:3001`
+- Cliquer **"Paramètres avancés"** → **"Continuer vers localhost"**
+- Répéter pour `https://localhost:3002`
+
+6. Accéder à l'interface web
+
+Frontend : `http://localhost:8080`
 
 ### Démarrage alternatif
 

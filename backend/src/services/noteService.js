@@ -304,14 +304,21 @@ class NoteService {
     // Vérifie le verrouillage physique
     const physicalLock = this.isNoteLocked(userId, noteId);
     if (physicalLock && physicalLock.lockedBy !== userId) {
-      throw new Error(`Note is physically locked by user ${physicalLock.lockedBy}`);
+      throw new Error(`Note is currently being edited by another user`);
     }
 
-    // Crée le fichier de verrouillage
-    try {
-      this.createLockFile(userId, noteId);
-    } catch (error) {
-      throw new Error(`Cannot acquire lock: ${error.message}`);
+    // Crée le fichier de verrouillage si pas déjà verrouillé par cet utilisateur
+    if (!physicalLock || physicalLock.lockedBy !== userId) {
+      try {
+        this.createLockFile(userId, noteId, userId);
+        
+        // Met à jour les métadonnées
+        noteMetadata.locked = true;
+        noteMetadata.lockedBy = userId;
+        noteMetadata.lockedAt = new Date().toISOString();
+      } catch (error) {
+        throw new Error(`Cannot acquire lock: ${error.message}`);
+      }
     }
 
     try {
@@ -346,10 +353,16 @@ class NoteService {
       logger.info('Note updated', { userId, noteId });
 
       return noteMetadata;
-    } finally {
-      // Libère toujours le lock, même en cas d'erreur
+    } catch (error) {
+      // En cas d'erreur, on libère le lock
       this.removeLockFile(userId, noteId);
+      noteMetadata.locked = false;
+      noteMetadata.lockedBy = null;
+      metadata[noteIndex] = noteMetadata;
+      this.saveUserMetadata(userId, metadata);
+      throw error;
     }
+    // Note : Le lock n'est PAS libéré automatiquement - l'utilisateur doit déverrouiller manuellement
   }
 
   /**
@@ -385,42 +398,73 @@ class NoteService {
 
     const noteMetadata = metadata[noteIndex];
 
-    // Vérifie le verrouillage
+    // Vérifie le verrouillage physique pour notes partagées
+    const physicalLock = this.isNoteLocked(ownerId, noteId);
+    if (physicalLock && physicalLock.lockedBy !== requesterId) {
+      throw new Error(`Note is currently being edited by another user`);
+    }
+
+    // Vérifie le verrouillage métadonnées
     if (noteMetadata.locked && noteMetadata.lockedBy !== requesterId) {
       throw new Error('Note is locked by another user');
     }
 
-    // Met à jour le titre si fourni
-    if (title) {
-      noteMetadata.title = validator.sanitizeString(title);
-    }
-
-    // Met à jour le contenu si fourni (chiffré avec la clé du propriétaire)
-    if (content !== undefined) {
-      const ownerDir = path.join(this.notesDir, ownerId);
-      const noteFile = path.join(ownerDir, `${noteId}.enc`);
-
-      const encryptedData = encrypt(content, ownerKey);
-
+    // Crée le fichier de verrouillage si pas déjà verrouillé par cet utilisateur
+    if (!physicalLock || physicalLock.lockedBy !== requesterId) {
       try {
-        fs.writeFileSync(noteFile, JSON.stringify(encryptedData), {
-          mode: 0o600,
-          encoding: 'utf8'
-        });
-        this.secureFilePermissions(noteFile);
+        this.createLockFile(ownerId, noteId, requesterId);
+        
+        // Met à jour les métadonnées
+        noteMetadata.locked = true;
+        noteMetadata.lockedBy = requesterId;
+        noteMetadata.lockedAt = new Date().toISOString();
       } catch (error) {
-        logger.error('Failed to update shared note file', { ownerId, noteId, requesterId, error: error.message });
-        throw new Error('Failed to update note');
+        throw new Error(`Cannot acquire lock: ${error.message}`);
       }
     }
 
-    noteMetadata.updatedAt = new Date().toISOString();
-    metadata[noteIndex] = noteMetadata;
-    this.saveUserMetadata(ownerId, metadata);
+    try {
+      // Met à jour le titre si fourni
+      if (title) {
+        noteMetadata.title = validator.sanitizeString(title);
+      }
 
-    logger.info('Shared note updated', { ownerId, noteId, requesterId });
+      // Met à jour le contenu si fourni (chiffré avec la clé du propriétaire)
+      if (content !== undefined) {
+        const ownerDir = path.join(this.notesDir, ownerId);
+        const noteFile = path.join(ownerDir, `${noteId}.enc`);
 
-    return noteMetadata;
+        const encryptedData = encrypt(content, ownerKey);
+
+        try {
+          fs.writeFileSync(noteFile, JSON.stringify(encryptedData), {
+            mode: 0o600,
+            encoding: 'utf8'
+          });
+          this.secureFilePermissions(noteFile);
+        } catch (error) {
+          logger.error('Failed to update shared note file', { ownerId, noteId, requesterId, error: error.message });
+          throw new Error('Failed to update note');
+        }
+      }
+
+      noteMetadata.updatedAt = new Date().toISOString();
+      metadata[noteIndex] = noteMetadata;
+      this.saveUserMetadata(ownerId, metadata);
+
+      logger.info('Shared note updated', { ownerId, noteId, requesterId });
+
+      return noteMetadata;
+    } catch (error) {
+      // En cas d'erreur, on libère le lock
+      this.removeLockFile(ownerId, noteId);
+      noteMetadata.locked = false;
+      noteMetadata.lockedBy = null;
+      metadata[noteIndex] = noteMetadata;
+      this.saveUserMetadata(ownerId, metadata);
+      throw error;
+    }
+    // Note : Le lock n'est PAS libéré automatiquement - l'utilisateur doit déverrouiller manuellement
   }
 
   /**
@@ -486,55 +530,6 @@ class NoteService {
   }
 
   /**
-   * Crée un fichier de verrouillage physique
-   */
-  createLockFile(userId, noteId) {
-    const userDir = path.join(this.notesDir, userId);
-    const lockFile = path.join(userDir, `${noteId}.lock`);
-
-    try {
-      const lockData = {
-        lockedBy: userId,
-        lockedAt: new Date().toISOString(),
-        pid: process.pid
-      };
-
-      // Vérifie si un lock existe déjà
-      if (fs.existsSync(lockFile)) {
-        const existingLock = JSON.parse(fs.readFileSync(lockFile, 'utf8'));
-        const lockAge = Date.now() - new Date(existingLock.lockedAt).getTime();
-
-        // Si le lock a plus de 5 minutes, on le considère comme obsolète
-        if (lockAge < 5 * 60 * 1000) {
-          throw new Error('Note is currently locked by another process');
-        } else {
-          logger.warn('Removing stale lock file', { userId, noteId, lockAge });
-          fs.unlinkSync(lockFile);
-        }
-      }
-
-      fs.writeFileSync(lockFile, JSON.stringify(lockData, null, 2), {
-        mode: 0o600,
-        encoding: 'utf8',
-        flag: 'wx' // Fail si le fichier existe (atomic operation)
-      });
-
-      logger.info('Lock file created', { userId, noteId });
-      return true;
-    } catch (error) {
-      if (error.code === 'EEXIST') {
-        throw new Error('Note is currently locked by another process');
-      }
-      logger.error('Failed to create lock file', {
-        userId,
-        noteId,
-        error: error.message
-      });
-      throw error;
-    }
-  }
-
-  /**
    * Supprime un fichier de verrouillage
    */
   removeLockFile(userId, noteId) {
@@ -548,8 +543,6 @@ class NoteService {
       }
     } catch (error) {
       logger.error('Failed to remove lock file', {
-        userId,
-        noteId,
         error: error.message
       });
       // Ne pas bloquer l'opération si le lock ne peut pas être supprimé
@@ -591,6 +584,148 @@ class NoteService {
         error: error.message
       });
       return false;
+    }
+  }
+
+  /**
+   * Verrouille une note pour édition (propriétaire ou note partagée)
+   */
+  async lockNoteForEditing(ownerId, noteId, editorId) {
+    const idValidation = validator.validateUUID(noteId);
+    if (!idValidation.valid) {
+      throw new Error(idValidation.error);
+    }
+
+    const metadata = this.loadUserMetadata(ownerId);
+    const noteIndex = metadata.findIndex(n => n.id === noteId);
+
+    if (noteIndex === -1) {
+      throw new Error('Note not found');
+    }
+
+    const noteMetadata = metadata[noteIndex];
+
+    // Vérifie si déjà verrouillée par quelqu'un d'autre
+    const physicalLock = this.isNoteLocked(ownerId, noteId);
+    if (physicalLock && physicalLock.lockedBy !== editorId) {
+      throw new Error(`Note is currently being edited by user ${physicalLock.lockedBy}`);
+    }
+
+    // Crée le fichier de verrouillage
+    try {
+      this.createLockFile(ownerId, noteId, editorId);
+      
+      // Met à jour les métadonnées
+      noteMetadata.locked = true;
+      noteMetadata.lockedBy = editorId;
+      noteMetadata.lockedAt = new Date().toISOString();
+      metadata[noteIndex] = noteMetadata;
+      this.saveUserMetadata(ownerId, metadata);
+
+      logger.info('Note locked for editing', { ownerId, noteId, editorId });
+
+      return {
+        success: true,
+        message: 'Note locked for editing',
+        lockedBy: editorId,
+        lockedAt: noteMetadata.lockedAt
+      };
+    } catch (error) {
+      throw new Error(`Cannot lock note: ${error.message}`);
+    }
+  }
+
+  /**
+   * Déverrouille une note après édition
+   */
+  async unlockNote(ownerId, noteId, editorId) {
+    const idValidation = validator.validateUUID(noteId);
+    if (!idValidation.valid) {
+      throw new Error(idValidation.error);
+    }
+
+    const metadata = this.loadUserMetadata(ownerId);
+    const noteIndex = metadata.findIndex(n => n.id === noteId);
+
+    if (noteIndex === -1) {
+      throw new Error('Note not found');
+    }
+
+    const noteMetadata = metadata[noteIndex];
+
+    // Vérifie que c'est bien l'éditeur qui déverrouille
+    if (noteMetadata.lockedBy && noteMetadata.lockedBy !== editorId) {
+      // Vérifie si le lock est expiré
+      const physicalLock = this.isNoteLocked(ownerId, noteId);
+      if (physicalLock && physicalLock.lockedBy !== editorId) {
+        throw new Error('You cannot unlock a note locked by another user');
+      }
+    }
+
+    // Supprime le fichier de verrouillage
+    this.removeLockFile(ownerId, noteId);
+
+    // Met à jour les métadonnées
+    noteMetadata.locked = false;
+    noteMetadata.lockedBy = null;
+    noteMetadata.lockedAt = null;
+    metadata[noteIndex] = noteMetadata;
+    this.saveUserMetadata(ownerId, metadata);
+
+    logger.info('Note unlocked', { ownerId, noteId, editorId });
+
+    return {
+      success: true,
+      message: 'Note unlocked'
+    };
+  }
+
+  /**
+   * Crée un fichier de verrouillage avec l'ID de l'éditeur
+   */
+  createLockFile(userId, noteId, editorId = null) {
+    const userDir = path.join(this.notesDir, userId);
+    const lockFile = path.join(userDir, `${noteId}.lock`);
+
+    try {
+      const lockData = {
+        noteId,
+        lockedBy: editorId || userId,
+        lockedAt: new Date().toISOString(),
+        pid: process.pid
+      };
+
+      // Vérifie si un lock existe déjà
+      if (fs.existsSync(lockFile)) {
+        const existingLock = JSON.parse(fs.readFileSync(lockFile, 'utf8'));
+        const lockAge = Date.now() - new Date(existingLock.lockedAt).getTime();
+
+        // Si le lock a plus de 5 minutes, on le considère comme obsolète
+        if (lockAge < 5 * 60 * 1000 && existingLock.lockedBy !== (editorId || userId)) {
+          throw new Error(`Note is currently being edited by user ${existingLock.lockedBy}`);
+        } else if (lockAge >= 5 * 60 * 1000) {
+          logger.warn('Removing stale lock file', { userId, noteId, lockAge });
+          fs.unlinkSync(lockFile);
+        }
+      }
+
+      fs.writeFileSync(lockFile, JSON.stringify(lockData, null, 2), {
+        mode: 0o600,
+        encoding: 'utf8'
+      });
+
+      logger.info('Lock file created', { userId, noteId, editorId: editorId || userId });
+      return true;
+    } catch (error) {
+      if (error.message.includes('currently being edited')) {
+        throw error;
+      }
+      logger.error('Failed to create lock file', {
+        userId,
+        noteId,
+        error: error.message
+      });
+      throw error;
     }
   }
 }

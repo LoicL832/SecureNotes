@@ -52,6 +52,11 @@ class APIClient {
             }
 
             if (!response.ok) {
+                // Gère spécifiquement l'erreur 423 (Locked)
+                if (response.status === 423) {
+                    const lockedBy = data.lockedBy ? ` par ${data.lockedBy}` : '';
+                    throw new Error(`Note verrouillée${lockedBy} (423)`);
+                }
                 throw new Error(data.error || `Erreur ${response.status}: ${response.statusText}`);
             }
 
@@ -140,13 +145,13 @@ class APIClient {
     }
 
     async lockNote(noteId) {
-        return this.request(`/shares/lock/${noteId}`, {
+        return this.request(`/notes/${noteId}/lock`, {
             method: 'POST'
         });
     }
 
     async unlockNote(noteId) {
-        return this.request(`/shares/unlock/${noteId}`, {
+        return this.request(`/notes/${noteId}/unlock`, {
             method: 'POST'
         });
     }

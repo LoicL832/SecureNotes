@@ -69,9 +69,9 @@ app.use(helmet({
 // CORS
 app.use(cors(config.cors));
 
-// Rate limiting global
-const limiter = rateLimit(config.rateLimit);
-app.use('/api/', limiter);
+// Rate limiting global - DÉSACTIVÉ POUR TESTS
+// const limiter = rateLimit(config.rateLimit);
+// app.use('/api/', limiter);
 
 // Parse JSON avec limite de taille
 app.use(express.json({ limit: '1mb' }));

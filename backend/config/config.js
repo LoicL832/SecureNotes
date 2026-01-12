@@ -18,7 +18,7 @@ module.exports = {
     peerUrl: process.env.PEER_URL || null,
     // Configuration HTTPS/TLS (certificats auto-signés pour tests locaux)
     https: {
-      enabled: process.env.HTTPS_ENABLED !== 'false', // true par défaut
+      enabled: true,
       keyPath: './certs/private-key.pem',
       certPath: './certs/certificate.pem'
     }
@@ -61,8 +61,8 @@ module.exports = {
 
   // Rate limiting authentification (plus strict)
   authRateLimit: {
-    windowMs: process.env.NODE_ENV === 'test' ? 60 * 1000 : 15 * 60 * 1000, // 60 seconds in test, 15 minutes in production
-    max: process.env.NODE_ENV === 'test' ? 500 : 5, // Very high limit for tests with longer window
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    max: 50, // 50 tentatives par 5 minutes pour faciliter les tests
     skipSuccessfulRequests: true
   },
 

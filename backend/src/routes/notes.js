@@ -122,6 +122,7 @@ router.get('/:id', async (req, res) => {
 /**
  * PUT /api/notes/:id
  * Met à jour une note (propre ou partagée)
+ * Vérifie automatiquement le verrouillage
  */
 router.put('/:id', async (req, res) => {
   try {
@@ -132,6 +133,16 @@ router.put('/:id', async (req, res) => {
 
     // Vérifie d'abord si c'est une note propre
     if (noteService.noteExists(userId, noteId)) {
+      // Vérifie le verrouillage
+      const lockInfo = noteService.isNoteLocked(userId, noteId);
+      if (lockInfo && lockInfo.lockedBy !== userId) {
+        return res.status(423).json({ 
+          error: `Note is currently being edited by another user`,
+          lockedBy: lockInfo.lockedBy,
+          lockedAt: lockInfo.lockedAt
+        });
+      }
+
       const note = await noteService.updateNote(
         userId, 
         noteId, 
@@ -151,6 +162,16 @@ router.put('/:id', async (req, res) => {
     // Sinon, vérifie si c'est une note partagée avec permission 'write'
     const share = shareService.getShareForUser(userId, noteId);
     if (share && share.permission === 'write') {
+      // Vérifie le verrouillage sur la note du propriétaire
+      const lockInfo = noteService.isNoteLocked(share.owner, noteId);
+      if (lockInfo && lockInfo.lockedBy !== userId) {
+        return res.status(423).json({ 
+          error: `Note is currently being edited by another user`,
+          lockedBy: lockInfo.lockedBy,
+          lockedAt: lockInfo.lockedAt
+        });
+      }
+
       // Récupère le propriétaire et sa clé
       const owner = await shareService.getOwner(share.owner);
       const note = await noteService.updateSharedNote(
@@ -201,6 +222,80 @@ router.delete('/:id', async (req, res) => {
   } catch (error) {
     logger.access(req.user.id, `note:${req.params.id}`, 'DELETE', false, req.ip);
     logger.error('Note deletion error', { 
+      userId: req.user.id,
+      noteId: req.params.id,
+      error: error.message 
+    });
+    res.status(400).json({ error: error.message });
+  }
+});
+
+/**
+ * POST /api/notes/:id/lock
+ * Verrouille une note pour édition (propriétaire ou partagée)
+ */
+router.post('/:id/lock', async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const noteId = req.params.id;
+
+    // Vérifie d'abord si c'est une note propre
+    if (noteService.noteExists(userId, noteId)) {
+      const result = await noteService.lockNoteForEditing(userId, noteId, userId);
+      logger.access(userId, `note:${noteId}`, 'LOCK', true, req.ip);
+      return res.json(result);
+    }
+
+    // Sinon, vérifie si c'est une note partagée avec permission 'write'
+    const share = shareService.getShareForUser(userId, noteId);
+    if (share && share.permission === 'write') {
+      const result = await noteService.lockNoteForEditing(share.owner, noteId, userId);
+      logger.access(userId, `note:${noteId}`, 'LOCK_SHARED', true, req.ip);
+      return res.json(result);
+    }
+
+    throw new Error('Note not found or you do not have write permission');
+
+  } catch (error) {
+    logger.access(req.user.id, `note:${req.params.id}`, 'LOCK', false, req.ip);
+    logger.error('Note lock error', { 
+      userId: req.user.id,
+      noteId: req.params.id,
+      error: error.message 
+    });
+    res.status(400).json({ error: error.message });
+  }
+});
+
+/**
+ * POST /api/notes/:id/unlock
+ * Déverrouille une note après édition
+ */
+router.post('/:id/unlock', async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const noteId = req.params.id;
+
+    // Vérifie d'abord si c'est une note propre
+    if (noteService.noteExists(userId, noteId)) {
+      const result = await noteService.unlockNote(userId, noteId, userId);
+      logger.access(userId, `note:${noteId}`, 'UNLOCK', true, req.ip);
+      return res.json(result);
+    }
+
+    // Sinon, vérifie si c'est une note partagée avec permission 'write'
+    const share = shareService.getShareForUser(userId, noteId);
+    if (share && share.permission === 'write') {
+      const result = await noteService.unlockNote(share.owner, noteId, userId);
+      logger.access(userId, `note:${noteId}`, 'UNLOCK_SHARED', true, req.ip);
+      return res.json(result);
+    }
+
+    throw new Error('Note not found or you do not have write permission');
+
+  } catch (error) {
+    logger.access(req.user.id, `note:${req.params.id}`, 'UNLOCK', false, req.ip);
+    logger.error('Note unlock error', { 
       userId: req.user.id,
       noteId: req.params.id,
       error: error.message 

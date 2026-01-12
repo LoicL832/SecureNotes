@@ -220,13 +220,37 @@ class NotesManager {
                 isShared
             };
 
+            // Tente de verrouiller la note
+            try {
+                await api.lockNote(noteId);
+                this.currentNote.lockedByMe = true;
+                console.log('Note verrouillée avec succès');
+            } catch (lockError) {
+                console.warn('Impossible de verrouiller la note:', lockError);
+                this.currentNote.lockedByMe = false;
+                
+                // Si la note est déjà verrouillée par quelqu'un d'autre
+                if (lockError.message.includes('currently being edited') || 
+                    lockError.message.includes('verrouillée') || 
+                    lockError.message.includes('423')) {
+                    showNotification('⚠️ Cette note est en cours de modification par un autre utilisateur. Vous pouvez la consulter mais pas la modifier.', 'warning');
+                    // Désactive les champs
+                    this.noteTitle.disabled = true;
+                    this.noteContent.disabled = true;
+                    document.getElementById('save-note-btn').disabled = true;
+                }
+                // Pour toute erreur de verrouillage, ne pas permettre l'édition
+            }
+
             this.noteTitle.value = response.note.title;
             this.noteContent.value = response.note.content;
             
             // Info de la note
             let info = `Créée: ${this.formatDate(response.note.createdAt)} | Modifiée: ${this.formatDate(response.note.updatedAt)}`;
-            if (response.note.locked) {
-                info += ` | 🔒 Verrouillée par ${response.note.lockedBy}`;
+            if (response.note.locked && !this.currentNote.lockedByMe) {
+                info += ` | 🔒 Verrouillée par un autre utilisateur`;
+            } else if (this.currentNote.lockedByMe) {
+                info += ` | 🔓 Vous modifiez cette note`;
             }
             this.noteInfo.textContent = info;
 
@@ -271,6 +295,16 @@ class NotesManager {
                     await api.updateNote(this.currentNote.id, title, content);
                 }
                 showNotification('Note mise à jour', 'success');
+                
+                // Déverrouille la note après sauvegarde
+                if (this.currentNote.lockedByMe) {
+                    try {
+                        await api.unlockNote(this.currentNote.id);
+                        console.log('Note déverrouillée');
+                    } catch (unlockError) {
+                        console.warn('Erreur lors du déverrouillage:', unlockError);
+                    }
+                }
             } else {
                 // Création
                 await api.createNote(title, content);
@@ -354,7 +388,22 @@ class NotesManager {
         this.noteEditor.classList.remove('hidden');
     }
 
-    closeEditor() {
+    async closeEditor() {
+        // Déverrouille la note si elle était verrouillée par nous
+        if (this.currentNote && this.currentNote.id && this.currentNote.lockedByMe) {
+            try {
+                await api.unlockNote(this.currentNote.id);
+                console.log('Note déverrouillée lors de la fermeture');
+            } catch (error) {
+                console.warn('Erreur lors du déverrouillage:', error);
+            }
+        }
+        
+        // Réactive les champs au cas où ils étaient désactivés
+        this.noteTitle.disabled = false;
+        this.noteContent.disabled = false;
+        document.getElementById('save-note-btn').disabled = false;
+        
         this.noteEditor.classList.add('hidden');
         document.getElementById(`${this.currentView}-view`).classList.add('active');
         this.currentNote = null;

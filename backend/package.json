@@ -12,20 +12,25 @@
     "test": "NODE_ENV=test node tests/security-tests.js",
     "dev": "node src/server.js --port=3001 --name=server1"
   },
-  "keywords": ["security", "notes", "replication", "rest-api"],
+  "keywords": [
+    "security",
+    "notes",
+    "replication",
+    "rest-api"
+  ],
   "author": "Groupe 6",
   "license": "MIT",
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.0.2",
+    "cors": "^2.8.5",
     "express": "^4.18.2",
     "express-rate-limit": "^7.1.5",
     "helmet": "^7.1.0",
-    "cors": "^2.8.5",
+    "jsonwebtoken": "^9.0.2",
+    "selfsigned": "^5.5.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
     "axios": "^1.6.5"
   }
 }
-

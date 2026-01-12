@@ -38,17 +38,28 @@ npm start
 
 ### Accepter Certificats SSL
 
-#### Server 1
+#### Sur Windows (Firefox)
+1. Ouvrir : `https://localhost:3001`
+2. Vous verrez : "Attention : risque probable de sécurité"
+3. Cliquer : **"Avancé"**
+4. Cliquer : **"Accepter le risque et continuer"**
+5. Répéter pour : `https://localhost:3002`
+
+#### Sur Windows (Chrome/Edge)
+1. Ouvrir : `https://localhost:3001`
+2. Vous verrez : "Votre connexion n'est pas privée"
+3. Cliquer : **"Paramètres avancés"**
+4. Cliquer : **"Continuer vers localhost (dangereux)"**
+5. Répéter pour : `https://localhost:3002`
+
+#### Sur Mac (Safari/Chrome/Firefox)
 1. Ouvrir : `https://localhost:3001`
 2. Cliquer : "Avancé" → "Continuer vers localhost"
-
-#### Server 2
-3. Ouvrir : `https://localhost:3002`
-4. Cliquer : "Avancé" → "Continuer vers localhost"
+3. Répéter pour : `https://localhost:3002`
 
 #### Frontend
 5. Ouvrir : `http://localhost:8080`
-6. Rafraîchir : **Cmd+R** (Mac) ou **Ctrl+R** (Windows)
+6. Rafraîchir : **Ctrl+R** (Windows) ou **Cmd+R** (Mac)
 
 **L'application fonctionne !**
 
