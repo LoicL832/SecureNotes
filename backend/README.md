@@ -1,8 +1,8 @@
-# SecureNotes - Backend 🔧
+# SecureNotes - Backend
 
 Serveur backend REST API pour le système de gestion de notes sécurisé SecureNotes.
 
-## 📁 Structure
+## Structure
 
 ```
 backend/
@@ -21,10 +21,11 @@ backend/
 │   │   ├── noteService.js           # Logique métier notes
 │   │   ├── shareService.js          # Logique métier partages
 │   │   └── replicationService.js    # Logique de réplication
-│   └── utils/
-│       ├── crypto.js                # Chiffrement AES-256-GCM
-│       ├── logger.js                # Système de logs
-│       └── validator.js             # Validation des entrées
+│   ├── utils/
+│   │   ├── crypto.js                # Chiffrement AES-256-GCM
+│   │   ├── logger.js                # Système de logs
+│   │   └── validator.js             # Validation des entrées
+│   └── server.js                    # Serveur principal
 ├── config/
 │   └── config.js                    # Configuration globale
 ├── tests/
@@ -38,14 +39,14 @@ backend/
 └── package.json
 ```
 
-## 🚀 Installation
+## Installation
 
 ```bash
 cd backend
 npm install
 ```
 
-## 🏃 Lancement
+## Lancement
 
 ### Serveur unique
 
@@ -59,12 +60,14 @@ Serveur disponible sur `http://localhost:3001`
 
 ### Mode réplication (2 serveurs)
 
-**Terminal 1 :**
+Terminal 1 :
+
 ```bash
 npm run server1
 ```
 
-**Terminal 2 :**
+Terminal 2 :
+
 ```bash
 npm run server2
 ```
@@ -78,7 +81,7 @@ npm run server2
 node src/server.js --port=3003 --name=server3 --peer=http://localhost:3001
 ```
 
-## 🧪 Tests
+## Tests
 
 ```bash
 npm test
@@ -86,13 +89,13 @@ npm test
 
 Exécute la suite complète de tests de sécurité (12 tests).
 
-## ⚙️ Configuration
+## Configuration
 
 ### Fichier `config/config.js`
 
 ```javascript
 module.exports = {
-  jwtSecret: 'CHANGE_THIS_IN_PRODUCTION',  // ⚠️ À changer absolument !
+  jwtSecret: 'CHANGE_THIS_IN_PRODUCTION',  // A changer absolument !
   jwtExpiresIn: '1h',
   refreshTokenExpiresIn: '7d',
   bcryptRounds: 12,
@@ -109,7 +112,7 @@ module.exports = {
 };
 ```
 
-## 📡 API REST
+## API REST
 
 ### Authentification
 
@@ -142,7 +145,7 @@ module.exports = {
 - `POST /api/internal/sync` - Synchroniser les données
 - `GET /api/internal/health` - État du serveur
 
-## 🔒 Sécurité
+## Sécurité
 
 ### Chiffrement
 
@@ -166,23 +169,23 @@ module.exports = {
 
 ### Protection
 
-- ✅ Brute force (5 tentatives max)
-- ✅ Rate limiting (100 req / 15 min)
-- ✅ Helmet.js (headers sécurisés)
-- ✅ CORS configuré
-- ✅ Validation stricte des entrées
-- ✅ Path traversal prevention
-- ✅ XSS protection
-- ✅ Logs d'audit
+- Brute force (5 tentatives max)
+- Rate limiting (100 req / 15 min)
+- Helmet.js (headers sécurisés)
+- CORS configuré
+- Validation stricte des entrées
+- Path traversal prevention
+- XSS protection
+- Logs d'audit
 
-## 📊 Logs
+## Logs
 
 Les logs sont stockés dans `data/logs/audit.log`.
 
 Format JSON :
 ```json
 {
-  "timestamp": "2026-01-06T10:30:00.000Z",
+  "timestamp": "2026-01-10T10:30:00.000Z",
   "level": "info",
   "userId": "uuid",
   "action": "login",
@@ -191,14 +194,14 @@ Format JSON :
 }
 ```
 
-## 🔄 Réplication
+## Réplication
 
 ### Architecture
 
-- **Type** : Active-Active
-- **Synchronisation** : Toutes les 30 secondes
-- **Conflits** : Last-Write-Wins (timestamp)
-- **Tolérance aux pannes** : Oui
+- Type : Active-Active
+- Synchronisation : Toutes les 30 secondes
+- Conflits : Last-Write-Wins (timestamp)
+- Tolérance aux pannes : Oui
 
 ### Données répliquées
 
@@ -207,7 +210,7 @@ Format JSON :
 - Partages
 - Métadonnées
 
-## 🛠️ Développement
+## Développement
 
 ### Ajouter une route
 
@@ -225,32 +228,32 @@ async function testNewFeature() {
   console.log('Test : Nouvelle fonctionnalité...');
   try {
     // Code du test
-    console.log('✅ Test réussi');
+    console.log('Test réussi');
     return true;
   } catch (error) {
-    console.error('❌ Test échoué:', error.message);
+    console.error('Test échoué:', error.message);
     return false;
   }
 }
 ```
 
-## 📦 Dépendances
+## Dépendances
 
 ### Production
 
-- **express** : Framework web
-- **bcryptjs** : Hachage mots de passe
-- **jsonwebtoken** : JWT
-- **helmet** : Headers sécurisés
-- **express-rate-limit** : Rate limiting
-- **cors** : CORS
-- **uuid** : Génération d'UUIDs
+- express : Framework web
+- bcryptjs : Hachage mots de passe
+- jsonwebtoken : JWT
+- helmet : Headers sécurisés
+- express-rate-limit : Rate limiting
+- cors : CORS
+- uuid : Génération d'UUIDs
 
 ### Développement
 
-- **axios** : Client HTTP (tests)
+- axios : Client HTTP (tests)
 
-## 🚀 Production
+## Production
 
 ### Checklist
 
@@ -272,14 +275,14 @@ export PORT=3001
 export PEER_URL="https://server2.example.com"
 ```
 
-## 📝 Notes
+## Notes
 
 - Les données sont stockées dans le système de fichiers (pas de base de données)
 - Les notes sont chiffrées au repos
 - Les tokens JWT sont stateless (pas de révocation côté serveur)
 - La réplication est éventuelle (eventual consistency)
 
-## 🐛 Debugging
+## Debugging
 
 ### Activer les logs détaillés
 
@@ -304,4 +307,3 @@ npm run server2
 
 # Observer les logs de synchronisation
 ```
-

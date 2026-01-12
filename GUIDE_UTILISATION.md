@@ -1,6 +1,6 @@
-# 🚀 GUIDE D'UTILISATION - SecureNotes
+# GUIDE D'UTILISATION - SecureNotes
 
-## 📋 Table des Matières
+## Table des Matières
 
 1. [Démarrage Rapide](#démarrage-rapide)
 2. [Pour le Professeur](#pour-le-professeur)
@@ -11,7 +11,7 @@
 
 ---
 
-## ⚡ DÉMARRAGE RAPIDE (30 SECONDES)
+## DÉMARRAGE RAPIDE (30 SECONDES)
 
 ### Lancement Simple
 
@@ -21,9 +21,9 @@ npm start
 ```
 
 **Lance automatiquement :**
-- 🖥️ **Server 1** (HTTPS) sur https://localhost:3001
-- 🖥️ **Server 2** (HTTPS) sur https://localhost:3002
-- 🎨 **Frontend** sur http://localhost:8080
+- Server 1 (HTTPS) sur https://localhost:3001
+- Server 2 (HTTPS) sur https://localhost:3002
+- Frontend sur http://localhost:8080
 
 ### Accepter Certificats SSL
 
@@ -39,7 +39,7 @@ npm start
 5. Ouvrir : `http://localhost:8080`
 6. Rafraîchir : **Cmd+R** (Mac) ou **Ctrl+R** (Windows)
 
-**✅ L'application fonctionne !**
+**L'application fonctionne !**
 
 ### Arrêter
 ```bash
@@ -48,7 +48,7 @@ Ctrl+C
 
 ---
 
-## 🎓 POUR LE PROFESSEUR
+## POUR LE PROFESSEUR
 
 ### Démarrage en 3 Étapes
 
@@ -73,7 +73,7 @@ npm start
 ```bash
 ./test-security.sh
 ```
-**Résultat attendu : 20/20 tests passés ✅**
+**Résultat attendu : 20/20 tests passés**
 
 ### Démonstrations Recommandées
 
@@ -110,25 +110,25 @@ tail -f backend/data/logs/audit.log | grep "content"
 #### 6. Verrouillage Concurrence
 - Éditer une note dans un onglet
 - Tenter d'éditer la même note dans un autre onglet
-- **Attendu :** "Note is locked"
+- Attendu : "Note is locked"
 
 ### Conformité UMLsec
 
-| Stéréotype | Implémentation | Statut |
-|------------|----------------|--------|
-| **<<secure links>>** | HTTPS/TLS | ✅ |
-| **<<encrypted>>** | AES-256-GCM | ✅ |
-| **<<secrecy>>** | JWT + Isolation | ✅ |
-| **<<integrity>>** | Verrouillage .lock | ✅ |
-| **<<critical>>** | Permissions 600/700 | ✅ |
-| **<<no down-flow>>** | Logs sanitisés | ✅ |
-| **<<data security>>** | Path Traversal protection | ✅ |
+| Stéréotype            | Implémentation | Statut |
+|-----------------------|----------------|--------|
+| <<**secure links**>>  | HTTPS/TLS | OK |
+| <<**encrypted**>>     | AES-256-GCM | OK |
+| <<**secrecy**>>       | JWT + Isolation | OK |
+| <<**integrity**>>     | Verrouillage .lock | OK |
+| <<**critical**>>      | Permissions 600/700 | OK |
+| <<**no down-flow**>>  | Logs sanitisés | OK |
+| <<**data security**>> | Path Traversal protection | OK |
 
-**Conformité : 7/7 ✅ (100%)**
+Conformité : 7/7 (100%)
 
 ---
 
-## 📦 LANCEMENT DÉTAILLÉ
+## LANCEMENT DÉTAILLÉ
 
 ### Architecture
 
@@ -150,19 +150,19 @@ tail -f backend/data/logs/audit.log | grep "content"
 
 ### Réplication Active-Active
 
-**Caractéristiques :**
-- ✅ 2 serveurs backend actifs simultanément
-- ✅ Synchronisation automatique des notes
-- ✅ Haute disponibilité (failover automatique)
-- ✅ Communication sécurisée HTTPS entre serveurs
+Caractéristiques :
+- 2 serveurs backend actifs simultanément
+- Synchronisation automatique des notes
+- Haute disponibilité (failover automatique)
+- Communication sécurisée HTTPS entre serveurs
 
 ### Vérifier la Réplication
 
-**Créer une note → Voir dans les logs :**
+Créer une note → Voir dans les logs :
 ```
 [server1] Note created
 [server1] Replicating to peer: https://localhost:3002
-[server1] ✅ Sync successful
+[server1] Sync successful
 
 [server2] Received replication from server1
 ```
@@ -179,42 +179,42 @@ tail -f backend/data/logs/audit.log | grep "content"
 
 ---
 
-## 🔐 ACCEPTER LES CERTIFICATS SSL
+## ACCEPTER LES CERTIFICATS SSL
 
 ### Pourquoi des Certificats Auto-Signés ?
 
-**Pour tests locaux académiques :**
-- ✅ **Approprié** : Communication sur localhost
-- ✅ **Conforme UMLsec** : Le stéréotype <<secure links>> exige un canal chiffré, pas nécessairement un certificat CA
-- ✅ **Chiffrement TLS actif** : Les données sont protégées
+Pour tests locaux académiques :
+- Approprié : Communication sur localhost
+- Conforme UMLsec : Le stéréotype <<**secure links**>> exige un canal chiffré, pas nécessairement un certificat CA
+- Chiffrement TLS actif : Les données sont protégées
 
-**L'avertissement du navigateur est normal et attendu.**
+L'avertissement du navigateur est normal et attendu.
 
 ### Procédure Détaillée
 
 #### Chrome / Edge
 1. Sur `https://localhost:3001` ou `https://localhost:3002`
-2. Cliquez sur **"Avancé"**
-3. Cliquez sur **"Continuer vers localhost (non sécurisé)"**
+2. Cliquez sur "Avancé"
+3. Cliquez sur "Continuer vers localhost (non sécurisé)"
 
-**🎯 Astuce :** Tapez `thisisunsafe` sur la page d'erreur (aucun champ visible)
+Astuce : Tapez `thisisunsafe` sur la page d'erreur (aucun champ visible)
 
 #### Firefox
-1. Cliquez sur **"Avancé"**
-2. Cliquez sur **"Accepter le risque et continuer"**
+1. Cliquez sur "Avancé"
+2. Cliquez sur "Accepter le risque et continuer"
 
 #### Safari
-1. Cliquez sur **"Afficher les détails"**
-2. Cliquez sur **"Visiter ce site web"**
+1. Cliquez sur "Afficher les détails"
+2. Cliquez sur "Visiter ce site web"
 3. Confirmez
 
 ### Note Importante
 
-**Vous devez accepter le certificat pour LES 2 SERVEURS** (3001 et 3002) pour que la réplication fonctionne.
+Vous devez accepter le certificat pour LES 2 SERVEURS (3001 et 3002) pour que la réplication fonctionne.
 
 ---
 
-## 🧪 TESTS DE SÉCURITÉ
+## TESTS DE SÉCURITÉ
 
 ### Tests Automatisés
 
@@ -222,24 +222,24 @@ tail -f backend/data/logs/audit.log | grep "content"
 ./test-security.sh
 ```
 
-**Couvre :**
+Couvre :
 1. Sécurité du Canal (HTTPS/TLS) - 4 tests
 2. Contrôle d'Accès (JWT + Propriété) - 3 tests
 3. Sécurité Stockage (Permissions + Path Traversal) - 5 tests
 4. Prévention Fuites (Logs sanitisés) - 4 tests
 5. Intégrité & Concurrence (Verrouillage) - 4 tests
 
-**Total : 20 tests**
+Total : 20 tests
 
 ### Résultat Attendu
 
 ```
 Total tests    : 20
-Tests réussis  : 20  ✅
+Tests réussis  : 20
 Tests échoués  : 0
 Conformité     : 100%
 
-✅ TOUS LES TESTS SONT PASSÉS !
+TOUS LES TESTS SONT PASSÉS !
 ```
 
 ### Tests Manuels
@@ -249,7 +249,7 @@ Conformité     : 100%
 2. Créer un compte
 3. Se connecter
 4. Créer une note
-5. ✅ Tout fonctionne
+5. Tout fonctionne
 
 #### Test Réplication
 1. Créer une note
@@ -257,11 +257,11 @@ Conformité     : 100%
    - `[server1] Note created`
    - `[server1] Replicating to peer`
    - `[server2] Received replication`
-3. ✅ Réplication active
+3. Réplication active
 
 ---
 
-## 🆘 DÉPANNAGE
+## DÉPANNAGE
 
 ### Port déjà utilisé
 
@@ -290,39 +290,24 @@ npm start
 
 ### Erreur "self-signed certificate"
 
-**Dans les logs de réplication :**
-- ✅ **Corrigé** : Le code accepte maintenant les certificats auto-signés
-- **Solution** : Redémarrer simplement l'application
+Dans les logs de réplication :
+- Corrigé : Le code accepte maintenant les certificats auto-signés
+- Solution : Redémarrer simplement l'application
 
 ### Mode HTTP (sans certificats)
 
-**Si vous voulez tester sans HTTPS :**
+Si vous voulez tester sans HTTPS :
 
 ```bash
 ./toggle-https.sh off
 npm start
 ```
 
-**⚠️ ATTENTION :** Désactive la conformité <<secure links>> UMLsec
-
-### Problèmes Navigateur
-
-#### Certificat non accepté
-- Fermez tous les onglets localhost
-- Fermez et rouvrez le navigateur
-- Réessayez la procédure
-
-#### Mode Navigation Privée
-- Les certificats ne persistent pas en navigation privée
-- Utilisez une fenêtre normale
-
-#### Extensions bloquantes
-- Désactivez HTTPS Everywhere, Privacy Badger, etc.
-- Ou utilisez un profil vierge du navigateur
+Attention : Désactive la conformité <<secure links>> UMLsec
 
 ---
 
-## 📊 VÉRIFICATIONS
+## VÉRIFICATIONS
 
 ### Checklist de Démarrage
 
@@ -335,7 +320,7 @@ npm start
 - [ ] Certificat Server 2 accepté (`https://localhost:3002`)
 - [ ] Frontend accessible (`http://localhost:8080`)
 - [ ] Connexion/Inscription fonctionne
-- [ ] ✅ Application opérationnelle
+- [ ] Application opérationnelle
 
 ### Checklist de Validation
 
@@ -345,22 +330,22 @@ npm start
 - [ ] Permissions fichiers : 600/700
 - [ ] Logs sanitisés : `[REDACTED]`
 - [ ] Verrouillage : Test avec 2 onglets
-- [ ] ✅ Conformité UMLsec complète
+- [ ] Conformité UMLsec complète
 
 ---
 
-## 📝 NOTES IMPORTANTES
+## NOTES IMPORTANTES
 
 ### Contexte Académique
 
-**Cette application est pour tests locaux uniquement :**
+Cette application est pour tests locaux uniquement :
 - Certificats auto-signés appropriés
 - Pas de déploiement en ligne prévu
 - Validation par l'enseignant sur sa machine
 
 ### Groupe 6 - Stockage Fichiers
 
-**Spécificités :**
+Spécificités :
 - Pas de base de données SQL
 - Stockage sur système de fichiers
 - Protection Path Traversal critique
@@ -368,7 +353,7 @@ npm start
 
 ### Conformité UMLsec
 
-**100% des exigences respectées :**
+100% des exigences respectées :
 - Canal sécurisé (HTTPS/TLS)
 - Chiffrement (AES-256-GCM)
 - Isolation utilisateurs (JWT)
@@ -379,15 +364,15 @@ npm start
 
 ---
 
-## 📚 DOCUMENTATION COMPLÉMENTAIRE
+## DOCUMENTATION COMPLÉMENTAIRE
 
 Pour plus de détails, consultez :
-- **AUDIT_SECURITE_UMLSEC.md** - Rapport d'audit complet
-- **ARCHITECTURE_TECHNIQUE.md** - Architecture et réplication
-- **README.md** - Vue d'ensemble du projet
+- AUDIT_SECURITE_UMLSEC.md - Rapport d'audit complet
+- ARCHITECTURE_TECHNIQUE.md - Architecture et réplication
+- README.md - Vue d'ensemble du projet
 
 ---
 
-**Application prête pour évaluation ! 🎓**
-**Conformité UMLsec : 100% ✅**
-
+Guide rédigé pour SecureNotes - Groupe 6
+Version : 1.0
+Date : 6 janvier 2026

@@ -2,7 +2,7 @@
 
 Ce répertoire contient les certificats SSL pour activer HTTPS et respecter les exigences UMLsec (<<secure links>>).
 
-## 🔐 Génération des Certificats (Tests Locaux)
+## Génération des Certificats (Tests Locaux)
 
 Pour générer des certificats auto-signés :
 
@@ -15,7 +15,7 @@ Cela créera :
 - `private-key.pem` : Clé privée (permissions 600)
 - `certificate.pem` : Certificat public auto-signé (valide 365 jours)
 
-## ⚠️ Avertissement Navigateur
+## Avertissement Navigateur
 
 Les certificats auto-signés déclencheront un avertissement de sécurité dans le navigateur.
 
@@ -26,17 +26,17 @@ Les certificats auto-signés déclencheront un avertissement de sécurité dans 
 
 **C'est normal et attendu pour des tests locaux !**
 
-## 🎓 Contexte Académique
+## Contexte Académique
 
 Cette application est développée pour un projet universitaire et sera testée **uniquement en local** par l'enseignant.
 
 Les certificats auto-signés sont **suffisants et appropriés** pour :
-- ✅ Validation de la conformité UMLsec
-- ✅ Démonstration du stéréotype <<secure links>>
-- ✅ Tests fonctionnels en local
-- ✅ Évaluation académique
+- Validation de la conformité UMLsec
+- Démonstration du stéréotype <<secure links>>
+- Tests fonctionnels en local
+- Évaluation académique
 
-## 🔧 Désactiver HTTPS (Si Nécessaire)
+## Désactiver HTTPS (Si Nécessaire)
 
 Si l'enseignant préfère tester en HTTP :
 ```bash
@@ -44,18 +44,17 @@ export HTTPS_ENABLED=false
 npm start
 ```
 
-## 📝 Notes de Sécurité
+## Notes de Sécurité
 
 - **Clé privée** : Ne JAMAIS commit la clé privée dans Git (protégé par .gitignore)
 - **Permissions** : La clé privée doit avoir des permissions 600 (lecture/écriture propriétaire uniquement)
 - **Validité** : Certificats valides 365 jours
 
-## 🎯 Conformité UMLsec
+## Conformité UMLsec
 
 Ces certificats satisfont le stéréotype **<<secure links>>** qui exige :
-- ✅ Communication chiffrée (TLS)
-- ✅ Confidentialité des données en transit
-- ✅ Protection contre man-in-the-middle
+- Communication chiffrée (TLS)
+- Confidentialité des données en transit
+- Protection contre man-in-the-middle
 
 **Pour des tests locaux académiques, les certificats auto-signés sont la solution recommandée.**
-

@@ -1,6 +1,6 @@
 # Guide d'installation et d'utilisation - SecureNotes
 
-## 📋 Prérequis
+## Prérequis
 
 ### Logiciels requis
 
@@ -22,11 +22,11 @@
 
 ---
 
-## 🚀 Installation pas à pas
+## Installation pas à pas
 
 ### Étape 1 : Cloner le projet
 
-```powershell
+```
 # Cloner le repository
 git clone https://github.com/LoicL832/SecureNotes.git
 
@@ -36,7 +36,7 @@ cd SecureNotes
 
 ### Étape 2 : Installer les dépendances
 
-```powershell
+```
 npm install
 ```
 
@@ -54,7 +54,7 @@ Cette commande va installer :
 
 ### Étape 3 : Vérifier l'installation
 
-```powershell
+```
 # Afficher la structure du projet
 dir
 ```
@@ -74,11 +74,11 @@ SecureNotes/
 
 ---
 
-## ▶️ Démarrage du système
+## Démarrage du système
 
 ### Option 1 : Serveur unique (développement)
 
-```powershell
+```
 npm run dev
 ```
 
@@ -90,12 +90,12 @@ npm run dev
 ### Option 2 : Deux serveurs avec réplication (recommandé)
 
 **Terminal 1** - Serveur principal :
-```powershell
+```
 npm run server1
 ```
 
 **Terminal 2** - Serveur répliqué :
-```powershell
+```
 npm run server2
 ```
 
@@ -108,9 +108,7 @@ npm run server2
 **Sortie console attendue** :
 
 ```
-╔════════════════════════════════════════════╗
-║       SecureNotes Server Started          ║
-╚════════════════════════════════════════════╝
+SecureNotes Server Started
 
 Server Name: server1
 Port: 3001
@@ -122,20 +120,20 @@ Frontend URL: http://localhost:3001
 Health Check: http://localhost:3001/health
 
 Security Features:
-✓ JWT Authentication
-✓ AES-256-GCM Encryption
-✓ Rate Limiting
-✓ Input Validation
-✓ Injection Protection
-✓ Audit Logging
-✓ Active-Active Replication
+- JWT Authentication
+- AES-256-GCM Encryption
+- Rate Limiting
+- Input Validation
+- Injection Protection
+- Audit Logging
+- Active-Active Replication
 
 Press Ctrl+C to stop the server.
 ```
 
 ---
 
-## 🌐 Accéder à l'interface web
+## Accéder à l'interface web
 
 ### Ouvrir le navigateur
 
@@ -145,8 +143,6 @@ Press Ctrl+C to stop the server.
 ### Première utilisation
 
 #### 1. Inscription
-
-![Écran d'inscription](https://via.placeholder.com/600x400?text=Écran+d'inscription)
 
 - Cliquer sur "S'inscrire"
 - Remplir le formulaire :
@@ -178,40 +174,40 @@ Password: SecurePass123!
 
 ---
 
-## 📝 Utilisation de l'application
+## Utilisation de l'application
 
 ### Vue d'ensemble
 
 ```
 ┌────────────────────────────────────────────┐
-│  🔒 SecureNotes    alice_demo [Déconnexion]│
+│  SecureNotes    alice_demo [Déconnexion]   │
 ├──────────┬─────────────────────────────────┤
-│          │                                  │
-│ 📝 Mes   │        Liste des notes          │
-│   notes  │                                  │
+│          │                                 │
+│ Mes      │        Liste des notes          │
+│ notes    │                                 │
 │          │  ┌──────────────────────┐       │
-│ 👥 Parta │  │ Ma première note     │       │
-│   gées   │  │ Créée: Aujourd'hui   │       │
-│   avec   │  └──────────────────────┘       │
-│   moi    │                                  │
-│          │  ┌──────────────────────┐       │
-│ 📤 Mes   │  │ Idées projet         │       │
-│   parta  │  │ Créée: Hier          │       │
-│   ges    │  └──────────────────────┘       │
-│          │                                  │
-│ [+Nouv.] │                                  │
-│  Note    │                                  │
+│ Partagées│  │ Ma première note     │       │
+│ avec moi │  │ Créée: Aujourd'hui   │       │
+│          │  └──────────────────────┘       │
+│          │                                 │
+│ Mes      │  ┌──────────────────────┐       │
+│ partages │  │ Idées projet         │       │
+│          │  │ Créée: Hier          │       │
+│          │  └──────────────────────┘       │
+│          │                                 │
+│ [+Nouv.] │                                 │
+│  Note    │                                 │
 └──────────┴─────────────────────────────────┘
 ```
 
 ### Créer une note
 
-1. Cliquer sur le bouton **"➕ Nouvelle note"**
+1. Cliquer sur le bouton "Nouvelle note"
 2. Entrer un **titre** (1-200 caractères)
 3. Entrer le **contenu** (jusqu'à 1 MB)
-4. Cliquer sur **"💾 Enregistrer"**
+4. Cliquer sur "Enregistrer"
 
-**Note** : La note est automatiquement chiffrée avec AES-256-GCM avant stockage
+Note : La note est automatiquement chiffrée avec AES-256-GCM avant stockage
 
 ### Lire une note
 
@@ -223,64 +219,64 @@ Password: SecurePass123!
 
 1. Ouvrir la note
 2. Modifier le titre ou le contenu
-3. Cliquer sur **"💾 Enregistrer"**
+3. Cliquer sur "Enregistrer"
 
 ### Supprimer une note
 
 1. Ouvrir la note
-2. Cliquer sur **"🗑️ Supprimer"**
+2. Cliquer sur "Supprimer"
 3. Confirmer la suppression
 
-**Attention** : Suppression définitive, aucune récupération possible !
+Attention : Suppression définitive, aucune récupération possible !
 
 ---
 
-## 👥 Partage de notes
+## Partage de notes
 
 ### Partager une note
 
 1. Ouvrir la note à partager
-2. Cliquer sur **"👥 Partager"**
+2. Cliquer sur "Partager"
 3. Dans la popup :
    - Entrer le **nom d'utilisateur** du destinataire
    - Choisir la **permission** :
      - **Lecture seule** : Le destinataire peut lire la note
      - **Lecture et écriture** : Le destinataire peut modifier la note
-4. Cliquer sur **"Partager"**
+4. Cliquer sur "Partager"
 
 ### Accéder aux notes partagées
 
-1. Cliquer sur **"👥 Partagées avec moi"** dans le menu
+1. Cliquer sur "Partagées avec moi" dans le menu
 2. Liste des notes partagées avec vous
-3. Badge indiquant la permission (👁️ Lecture ou ✏️ Écriture)
+3. Badge indiquant la permission (Lecture ou Écriture)
 4. Cliquer sur une note pour l'ouvrir
 
 ### Verrouiller une note (écriture collaborative)
 
-**Contexte** : Vous travaillez à plusieurs sur une note avec permission "écriture"
+Contexte : Vous travaillez à plusieurs sur une note avec permission "écriture"
 
 1. Ouvrir la note partagée
-2. Pendant que vous modifiez, la note est **verrouillée** automatiquement
-3. Les autres utilisateurs voient : "🔒 Verrouillée par alice_demo"
+2. Pendant que vous modifiez, la note est verrouillée automatiquement
+3. Les autres utilisateurs voient : "Verrouillée par alice_demo"
 4. Ils ne peuvent pas modifier tant que vous travaillez dessus
-5. En sauvegardant, la note est **déverrouillée**
+5. En sauvegardant, la note est déverrouillée
 
 ### Révoquer un partage
 
-1. Cliquer sur **"📤 Mes partages"** dans le menu
+1. Cliquer sur "Mes partages" dans le menu
 2. Liste des notes que vous avez partagées
-3. Cliquer sur **"Révoquer"** à côté du partage à supprimer
+3. Cliquer sur "Révoquer" à côté du partage à supprimer
 4. Le destinataire perd immédiatement l'accès
 
 ---
 
-## 🔧 Configuration avancée
+## Configuration avancée
 
 ### Changer le port du serveur
 
 Éditer `config/config.js` :
 
-```javascript
+```
 server: {
   port: process.env.PORT || 3005,  // Changer 3001 en 3005
   // ...
@@ -289,7 +285,7 @@ server: {
 
 Ou utiliser une variable d'environnement :
 
-```powershell
+```
 # Windows PowerShell
 $env:PORT=3005
 npm run dev
@@ -297,11 +293,11 @@ npm run dev
 
 ### Modifier le secret JWT
 
-**IMPORTANT** : En production, changez le secret JWT !
+IMPORTANT : En production, changez le secret JWT !
 
 Éditer `config/config.js` :
 
-```javascript
+```
 jwt: {
   secret: 'VOTRE_SECRET_ROBUSTE_ICI',  // Min 32 caractères aléatoires
   // ...
@@ -312,7 +308,7 @@ jwt: {
 
 Si votre frontend est sur un autre domaine :
 
-```javascript
+```
 cors: {
   origin: 'http://mon-frontend.com',  // Changer l'origine
   credentials: true
@@ -323,7 +319,7 @@ cors: {
 
 Pour environnement de test (plus permissif) :
 
-```javascript
+```
 rateLimit: {
   windowMs: 15 * 60 * 1000,
   max: 500,  // Augmenter la limite
@@ -333,19 +329,19 @@ rateLimit: {
 
 ---
 
-## 🧪 Lancer les tests de sécurité
+## Lancer les tests de sécurité
 
 ### Tests automatisés
 
-```powershell
+```
 npm test
 ```
 
-**Prérequis** : Le serveur doit être démarré
+Prérequis : Le serveur doit être démarré
 
-**Résultat attendu** : 12/12 tests réussis
+Résultat attendu : 12/12 tests réussis
 
-**Durée** : ~30-45 secondes
+Durée : ~30-45 secondes
 
 ### Interpréter les résultats
 
@@ -362,11 +358,11 @@ Si un test échoue :
 
 ---
 
-## 🔍 Vérification du chiffrement
+## Vérification du chiffrement
 
 ### Voir les fichiers chiffrés
 
-```powershell
+```
 # Naviguer vers le dossier des notes
 cd data\notes
 
@@ -378,31 +374,31 @@ Chaque utilisateur a son propre dossier (UUID).
 
 ### Contenu d'un fichier .enc
 
-```powershell
+```
 # Afficher un fichier de note
 type [userId]\[noteId].enc
 ```
 
-**Résultat** : JSON avec données chiffrées
+Résultat : JSON avec données chiffrées
 ```json
 {
-  "encrypted": "a3f8e9c1d2...",  // Contenu chiffré
-  "iv": "7b2d4e9a...",           // Vecteur d'initialisation
-  "tag": "f1c8d3a7...",          // Tag d'authentification
-  "salt": "9e5a2c1f..."          // Salt unique
+  "encrypted": "a3f8e9c1d2...",
+  "iv": "7b2d4e9a...",
+  "tag": "f1c8d3a7...",
+  "salt": "9e5a2c1f..."
 }
 ```
 
-**Le contenu est illisible sans la clé de déchiffrement !**
+Le contenu est illisible sans la clé de déchiffrement !
 
 ### Vérifier les logs
 
-```powershell
+```
 # Afficher les logs d'audit
 type data\logs\audit.log
 ```
 
-**Format** :
+Format :
 ```json
 {"timestamp":"2026-01-06T12:34:56.789Z","level":"AUTH","event":"LOGIN_SUCCESS","userId":"alice","ip":"127.0.0.1","success":true}
 {"timestamp":"2026-01-06T12:35:10.123Z","level":"INFO","event":"Note created","userId":"alice","noteId":"abc-123"}
@@ -410,28 +406,28 @@ type data\logs\audit.log
 
 ---
 
-## 🛠️ Dépannage
+## Dépannage
 
 ### Problème : Port déjà utilisé
 
-**Erreur** : `EADDRINUSE: address already in use`
+Erreur : `EADDRINUSE: address already in use`
 
-**Solution** :
+Solution :
 1. Arrêter le processus existant :
-   ```powershell
-   # Trouver le processus
-   netstat -ano | findstr :3001
-   
-   # Tuer le processus (remplacer PID)
-   taskkill /PID [PID] /F
-   ```
+```
+# Trouver le processus
+netstat -ano | findstr :3001
+
+# Tuer le processus (remplacer PID)
+taskkill /PID [PID] /F
+```
 2. Ou changer le port (voir Configuration avancée)
 
 ### Problème : Dépendances manquantes
 
-**Erreur** : `Cannot find module 'express'`
+Erreur : `Cannot find module 'express'`
 
-**Solution** :
+Solution :
 ```powershell
 # Supprimer node_modules
 Remove-Item -Recurse -Force node_modules
@@ -442,48 +438,48 @@ npm install
 
 ### Problème : Token JWT invalide
 
-**Erreur** : `401 Unauthorized`
+Erreur : `401 Unauthorized`
 
-**Solution** :
+Solution :
 1. Se déconnecter
 2. Se reconnecter
 3. Nouveau token généré automatiquement
 
 ### Problème : Note ne se déchiffre pas
 
-**Erreur** : `Failed to decrypt note`
+Erreur : `Failed to decrypt note`
 
-**Causes possibles** :
+Causes possibles :
 - Fichier .enc corrompu
 - Clé de chiffrement incorrecte
 - Utilisateur différent
 
-**Solution** :
+Solution :
 - Impossible de récupérer (chiffrement sécurisé)
 - Supprimer la note corrompue
 
 ### Problème : Réplication ne fonctionne pas
 
-**Symptôme** : Données non synchronisées entre serveurs
+Symptôme : Données non synchronisées entre serveurs
 
-**Vérification** :
+Vérification :
 ```powershell
 # Tester la santé du serveur pair
 curl http://localhost:3002/api/internal/health
 ```
 
-**Solutions** :
+Solutions :
 1. Vérifier que les deux serveurs sont démarrés
 2. Vérifier les URLs de pair dans la configuration
 3. Consulter les logs :
-   ```powershell
-   # Rechercher les erreurs de réplication
-   findstr /C:"REPLICATION" data\logs\audit.log
-   ```
+```
+# Rechercher les erreurs de réplication
+findstr /C:"REPLICATION" data\logs\audit.log
+```
 
 ---
 
-## 📊 Surveillance et maintenance
+## Surveillance et maintenance
 
 ### Vérifier l'état du serveur
 
@@ -492,7 +488,7 @@ curl http://localhost:3002/api/internal/health
 curl http://localhost:3001/health
 ```
 
-**Réponse** :
+Réponse :
 ```json
 {
   "status": "healthy",
@@ -510,7 +506,7 @@ Get-Content data\logs\audit.log -Wait -Tail 20
 
 ### Nettoyage des données
 
-**Attention** : Suppression définitive !
+Attention : Suppression définitive !
 
 ```powershell
 # Supprimer toutes les données
@@ -529,7 +525,7 @@ Compress-Archive -Path data\ -DestinationPath backup-$(Get-Date -Format "yyyyMMd
 
 ---
 
-## 🚀 Déploiement en production
+## Déploiement en production
 
 ### Checklist pré-déploiement
 
@@ -577,7 +573,7 @@ server {
 
 ---
 
-## 📞 Support et ressources
+## Support et ressources
 
 ### Documentation
 
@@ -599,7 +595,7 @@ https://github.com/LoicL832/SecureNotes
 
 ---
 
-## ✅ Checklist de vérification
+## Checklist de vérification
 
 Après installation, vérifier que :
 
@@ -619,6 +615,6 @@ Après installation, vérifier que :
 
 ---
 
-**Guide rédigé pour SecureNotes - Groupe 6**  
-**Version : 1.0**  
-**Date : 6 janvier 2026**
+Guide rédigé pour SecureNotes - Groupe 6
+Version : 1.0
+Date : 6 janvier 2026

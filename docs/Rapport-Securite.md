@@ -93,7 +93,7 @@ Le développement a suivi une approche *Security by Design* :
 
 Le projet implémente les stéréotypes UMLSec suivants :
 
-#### <<secrecy>> - Confidentialité
+#### <<**secrecy**>> - Confidentialité
 
 **Application** :
 - Chiffrement AES-256-GCM des notes au repos
@@ -102,11 +102,11 @@ Le projet implémente les stéréotypes UMLSec suivants :
 - Tokens JWT signés
 
 **Validation** :
-- ✅ Aucune donnée sensible en clair sur disque
-- ✅ Communications chiffrées (TLS 1.3)
-- ✅ Mots de passe jamais stockés en clair
+-  Aucune donnée sensible en clair sur disque
+-  Communications chiffrées (TLS 1.3)
+-  Mots de passe jamais stockés en clair
 
-#### <<integrity>> - Intégrité
+#### <<**integrity**>> - Intégrité
 
 **Application** :
 - Tag d'authentification GCM
@@ -115,11 +115,11 @@ Le projet implémente les stéréotypes UMLSec suivants :
 - Détection de conflits dans la réplication
 
 **Validation** :
-- ✅ Modification détectée par vérification du tag
-- ✅ Logs non altérables
-- ✅ Conflits résolus avec timestamps
+-  Modification détectée par vérification du tag
+-  Logs non altérables
+-  Conflits résolus avec timestamps
 
-#### <<critical>> - Critique
+#### <<**critical**>> - Critique
 
 **Application** :
 - Système d'authentification
@@ -133,7 +133,7 @@ Le projet implémente les stéréotypes UMLSec suivants :
 - Logs de sécurité détaillés
 - Monitoring actif
 
-#### <<authenticated>> - Authentification requise
+#### <<**authenticated**>> - Authentification requise
 
 **Application** :
 - Toutes les routes de notes nécessitent un JWT valide
@@ -141,11 +141,11 @@ Le projet implémente les stéréotypes UMLSec suivants :
 - Extraction du contexte utilisateur
 
 **Validation** :
-- ✅ Accès refusé sans token (401)
-- ✅ Token expiré rejeté
-- ✅ Token invalide rejeté
+-  Accès refusé sans token (401)
+-  Token expiré rejeté
+-  Token invalide rejeté
 
-#### <<secure links>> - Liens sécurisés
+#### <<**secure links**>> - Liens sécurisés
 
 **Application** :
 - HTTPS obligatoire client ↔ serveur
@@ -153,9 +153,9 @@ Le projet implémente les stéréotypes UMLSec suivants :
 - Headers de sécurité (HSTS, CSP)
 
 **Validation** :
-- ✅ Redirection HTTP → HTTPS
-- ✅ HSTS activé (1 an)
-- ✅ Certificats validés
+-  Redirection HTTP → HTTPS
+-  HSTS activé (1 an)
+-  Certificats validés
 
 ### 3.2 Diagrammes UMLSec
 
@@ -182,7 +182,7 @@ Voir `docs/UMLSec-Diagrams.md` pour :
 - Vérification du token à chaque requête
 - Expiration des tokens (1 heure)
 
-**Test** : ✅ Test 8 - Token expiration
+**Test** :  Test 8 - Token expiration
 
 ---
 
@@ -196,7 +196,7 @@ Voir `docs/UMLSec-Diagrams.md` pour :
 - Validation stricte des entrées
 - Logs d'audit immuables
 
-**Test** : ✅ Test 10 - Encryption at rest
+**Test** :  Test 10 - Encryption at rest
 
 ---
 
@@ -225,8 +225,8 @@ Voir `docs/UMLSec-Diagrams.md` pour :
 - Messages d'erreur génériques (pas de leak)
 
 **Tests** :
-- ✅ Test 7 - Unauthorized access
-- ✅ Test 9 - Privilege escalation
+-  Test 7 - Unauthorized access
+-  Test 9 - Privilege escalation
 
 ---
 
@@ -241,7 +241,7 @@ Voir `docs/UMLSec-Diagrams.md` pour :
 - Timeout sur les opérations
 - Verrouillage après tentatives échouées
 
-**Test** : ✅ Test 2 - Rate limiting
+**Test** :  Test 2 - Rate limiting
 
 ---
 
@@ -256,8 +256,8 @@ Voir `docs/UMLSec-Diagrams.md` pour :
 - Validation de la propriété des ressources
 
 **Tests** :
-- ✅ Test 9 - Privilege escalation
-- ✅ Test 11 - Share permissions
+-  Test 9 - Privilege escalation
+-  Test 11 - Share permissions
 
 ---
 
@@ -273,7 +273,7 @@ Voir `docs/UMLSec-Diagrams.md` pour :
 - Détection de patterns d'injection
 - Sanitization des entrées
 
-**Test** : ✅ Test 4 - SQL/NoSQL Injection
+**Test** :  Test 4 - SQL/NoSQL Injection
 
 ---
 
@@ -287,7 +287,7 @@ Voir `docs/UMLSec-Diagrams.md` pour :
 - Échappement automatique
 - Validation côté serveur
 
-**Test** : ✅ Test 5 - XSS Protection
+**Test** :  Test 5 - XSS Protection
 
 ---
 
@@ -301,7 +301,7 @@ Voir `docs/UMLSec-Diagrams.md` pour :
 - Chemins absolus uniquement
 - Isolation par répertoire utilisateur
 
-**Test** : ✅ Test 6 - Path Traversal
+**Test** :  Test 6 - Path Traversal
 
 ---
 
@@ -315,7 +315,7 @@ Voir `docs/UMLSec-Diagrams.md` pour :
 - Rate limiting strict sur /auth/login
 - Logs de tentatives échouées
 
-**Test** : ✅ Test 1 - Brute Force Protection
+**Test** :  Test 1 - Brute Force Protection
 
 ---
 
@@ -341,7 +341,7 @@ Voir `docs/UMLSec-Diagrams.md` pour :
 
 **Implémentation** :
 
-```javascript
+```
 // Hash du mot de passe avec bcrypt
 const salt = await bcrypt.genSalt(12); // 2^12 itérations
 const passwordHash = await bcrypt.hash(password, salt);
@@ -364,7 +364,8 @@ const accessToken = jwt.sign(
 
 **Middleware d'authentification** :
 
-```javascript
+```
+// Middleware d'authentification
 function authenticate(req, res, next) {
   const token = req.headers.authorization?.replace('Bearer ', '');
   const decoded = jwt.verify(token, SECRET);
@@ -375,7 +376,8 @@ function authenticate(req, res, next) {
 
 **Vérification de propriété** :
 
-```javascript
+```
+// Vérification de propriété
 function checkOwnership(req, res, next) {
   if (req.user.id !== resource.owner && req.user.role !== 'admin') {
     return res.status(403).json({ error: 'Forbidden' });
@@ -399,7 +401,8 @@ function checkOwnership(req, res, next) {
 
 **Implémentation** :
 
-```javascript
+```
+// Fonction de chiffrement
 function encrypt(plaintext, userKey) {
   // 1. Génère un salt unique
   const salt = crypto.randomBytes(64);
@@ -423,10 +426,10 @@ function encrypt(plaintext, userKey) {
 ```
 
 **Sécurité garantie** :
-- ✅ IV jamais réutilisé (aléatoire par note)
-- ✅ Salt unique par opération
-- ✅ Clé dérivée avec PBKDF2 (100k iterations)
-- ✅ Tag GCM vérifie l'intégrité
+-  IV jamais réutilisé (aléatoire par note)
+-  Salt unique par opération
+-  Clé dérivée avec PBKDF2 (100k iterations)
+-  Tag GCM vérifie l'intégrité
 
 #### Dérivation de clé PBKDF2
 
@@ -449,7 +452,7 @@ function encrypt(plaintext, userKey) {
 
 **Regex de validation** :
 
-```javascript
+```
 // Email
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -462,7 +465,8 @@ const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}
 
 **Validation mot de passe** :
 
-```javascript
+```
+// Validation mot de passe
 function validatePassword(password) {
   // Longueur minimale
   if (password.length < 8) return false;
@@ -479,7 +483,8 @@ function validatePassword(password) {
 
 #### Détection d'injection
 
-```javascript
+```
+// Détection d'injection
 function detectInjection(input) {
   const injectionPatterns = [
     /<script/i,           // XSS
@@ -500,7 +505,8 @@ function detectInjection(input) {
 
 #### Headers de sécurité (Helmet)
 
-```javascript
+```
+// Configuration de Helmet
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -532,7 +538,8 @@ app.use(helmet({
 #### Rate Limiting
 
 **Global (API)** :
-```javascript
+```
+// Limitation globale
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,  // 15 minutes
   max: 100,                   // 100 requêtes par IP
@@ -542,7 +549,8 @@ const limiter = rateLimit({
 ```
 
 **Authentification (strict)** :
-```javascript
+```
+// Limitation sur l'authentification
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 5,                     // 5 tentatives seulement
@@ -552,7 +560,8 @@ const authLimiter = rateLimit({
 
 #### CORS
 
-```javascript
+```
+// Configuration CORS
 app.use(cors({
   origin: 'http://localhost:8080',  // Origine autorisée
   credentials: true                  // Cookies autorisés
@@ -599,7 +608,8 @@ app.use(cors({
 
 #### Authentification inter-serveurs
 
-```javascript
+```
+// Authentification des requêtes internes
 function authenticateInternal(req, res, next) {
   const secret = req.headers['x-internal-secret'];
   
@@ -640,18 +650,18 @@ function authenticateInternal(req, res, next) {
 
 | # | Test | Objectif | Résultat attendu |
 |---|------|----------|------------------|
-| 1 | Brute Force Protection | Verrouillage après 5 tentatives | ✅ Compte bloqué |
-| 2 | Rate Limiting | Limitation des requêtes | ✅ 429 Too Many Requests |
-| 3 | Weak Password | Rejet mots de passe faibles | ✅ 400 Bad Request |
-| 4 | SQL Injection | Blocage injections | ✅ Payloads rejetés |
-| 5 | XSS Protection | Sanitization XSS | ✅ Tags échappés |
-| 6 | Path Traversal | Détection "../" | ✅ 400 Bad Request |
-| 7 | Unauthorized Access | Accès sans token | ✅ 401 Unauthorized |
-| 8 | Token Expiration | Rejet tokens expirés | ✅ 401 Unauthorized |
-| 9 | Privilege Escalation | Isolation données | ✅ 404 Not Found |
-| 10 | Encryption | Chiffrement au repos | ✅ Déchiffrement OK |
-| 11 | Share Permissions | Respect permissions | ✅ Lecture seule OK |
-| 12 | Note Locking | Verrouillage exclusif | ✅ Accès bloqué |
+| 1 | Brute Force Protection | Verrouillage après 5 tentatives |  Compte bloqué |
+| 2 | Rate Limiting | Limitation des requêtes | 429 Too Many Requests |
+| 3 | Weak Password | Rejet mots de passe faibles | 400 Bad Request |
+| 4 | SQL Injection | Blocage injections | Payloads rejetés |
+| 5 | XSS Protection | Sanitization XSS | Tags échappés |
+| 6 | Path Traversal | Détection "../" | 400 Bad Request |
+| 7 | Unauthorized Access | Accès sans token | 401 Unauthorized |
+| 8 | Token Expiration | Rejet tokens expirés | 401 Unauthorized |
+| 9 | Privilege Escalation | Isolation données | 404 Not Found |
+| 10 | Encryption | Chiffrement au repos | Déchiffrement OK |
+| 11 | Share Permissions | Respect permissions | Lecture seule OK |
+| 12 | Note Locking | Verrouillage exclusif | Accès bloqué |
 
 ### 6.2 Résultats des tests
 
@@ -667,10 +677,10 @@ npm test
 ╚════════════════════════════════════════════════════════╝
 
 ━━━ TEST 1: Protection contre le brute force ━━━
-✓ Compte verrouillé après 5 tentatives échouées
+ Compte verrouillé après 5 tentatives échouées
 
 ━━━ TEST 2: Rate limiting sur l'authentification ━━━
-✓ Rate limiting activé - requêtes bloquées
+ Rate limiting activé - requêtes bloquées
 
 [...]
 
@@ -682,7 +692,7 @@ Réussis: 12 tests
 Échoués: 0 tests
 Taux de réussite: 100%
 
-✓ Tous les tests de sécurité ont réussi !
+ Tous les tests de sécurité ont réussi !
 ```
 
 ### 6.3 Tests de pénétration simulés
@@ -696,7 +706,7 @@ Taux de réussite: 100%
 - Permissions filesystem restrictives
 - Pas d'endpoint pour accès direct
 
-**Résultat** : ✅ Aucun accès possible
+**Résultat** :  Aucun accès possible
 
 ---
 
@@ -709,7 +719,7 @@ Taux de réussite: 100%
 - Refresh token séparé
 - Vérification signature à chaque requête
 
-**Résultat** : ✅ Token expiré rejeté
+**Résultat** :  Token expiré rejeté
 
 ---
 
@@ -721,7 +731,7 @@ Taux de réussite: 100%
 - Tag GCM vérifie l'intégrité
 - Déchiffrement échoue si altération
 
-**Résultat** : ✅ Erreur de déchiffrement
+**Résultat** :  Erreur de déchiffrement
 
 ---
 
@@ -742,23 +752,23 @@ Taux de réussite: 100%
 | A09 | Logging Failures | Logs complets + audit trail + monitoring |
 | A10 | SSRF | Validation URLs + pas de requêtes externes user |
 
-**Conformité** : ✅ 10/10
+**Conformité** :  10/10
 
 ### 7.2 Validation UMLSec
 
 **Diagrammes produits** :
-- ✅ Diagramme de cas d'utilisation avec stéréotypes
-- ✅ Diagramme de composants avec annotations
-- ✅ Diagramme de déploiement avec sécurisation
-- ✅ Diagrammes de séquence sécurisés
+-  Diagramme de cas d'utilisation avec stéréotypes
+-  Diagramme de composants avec annotations
+-  Diagramme de déploiement avec sécurisation
+-  Diagrammes de séquence sécurisés
 
 **Stéréotypes appliqués** :
-- ✅ <<secrecy>> : Chiffrement
-- ✅ <<integrity>> : GCM tags, HMAC
-- ✅ <<critical>> : Composants protégés
-- ✅ <<secure links>> : HTTPS, auth inter-serveurs
-- ✅ <<authenticated>> : Accès protégé
-- ✅ <<encrypted>> : Stockage chiffré
+-  <<**secrecy**>> : Chiffrement
+-  <<**integrity**>> : GCM tags, HMAC
+-  <<**critical**>> : Composants protégés
+-  <<**secure links**>> : HTTPS, auth inter-serveurs
+-  <<**authenticated**>> : Accès protégé
+-  <<**encrypted**>> : Stockage chiffré
 
 ### 7.3 Métriques de sécurité
 
@@ -784,17 +794,17 @@ Taux de réussite: 100%
 
 ### 8.1 Objectifs atteints
 
-✅ **Système fonctionnel** : Toutes les fonctionnalités demandées sont implémentées
+ Système fonctionnel : Toutes les fonctionnalités demandées sont implémentées
 
-✅ **Sécurité robuste** : 12/12 tests de sécurité réussis, conformité OWASP
+ Sécurité robuste : 12/12 tests de sécurité réussis, conformité OWASP
 
-✅ **UMLSec complet** : Diagrammes avec annotations de sécurité
+ UMLSec complet : Diagrammes avec annotations de sécurité
 
-✅ **Chiffrement fort** : AES-256-GCM pour les données au repos
+ Chiffrement fort : AES-256-GCM pour les données au repos
 
-✅ **Réplication** : Active-active avec synchronisation automatique
+ Réplication : Active-active avec synchronisation automatique
 
-✅ **Documentation** : Complète et détaillée
+ Documentation : Complète et détaillée
 
 ### 8.2 Points forts
 

@@ -1,6 +1,6 @@
 # SecureNotes - Frontend
 
-## 🎯 Architecture à deux pages séparées
+## Architecture à deux pages séparées
 
 Le frontend est maintenant organisé en **deux pages HTML distinctes** avec un système de redirection :
 
@@ -8,11 +8,11 @@ Le frontend est maintenant organisé en **deux pages HTML distinctes** avec un s
 - **notes.html** - Page de gestion des notes (protégée par authentification)
 - **index.html** - Redirection automatique vers login.html
 
-## 📋 Structure des pages 🎨
+## Structure des pages
 
 Interface web pour le système de gestion de notes sécurisé SecureNotes.
 
-## 📁 Structure
+## Structure
 
 ```
 frontend/
@@ -26,7 +26,7 @@ frontend/
     └── app.js          # Application principale
 ```
 
-## 🚀 Lancement
+## Lancement
 
 ### Option 1 : Avec http-server (recommandé)
 
@@ -49,7 +49,7 @@ npm start
 
 L'interface sera accessible sur `http://localhost:3001`
 
-## 🔌 Configuration
+## Configuration
 
 ### API Backend
 
@@ -61,7 +61,7 @@ Pour changer l'URL de l'API, modifiez la constante `API_BASE_URL` dans `js/api.j
 const API_BASE_URL = 'http://localhost:3001/api';
 ```
 
-## 🎨 Technologies
+## Technologies
 
 - **HTML5** : Structure sémantique
 - **CSS3** : Styles modernes avec variables CSS
@@ -69,7 +69,7 @@ const API_BASE_URL = 'http://localhost:3001/api';
 - **Fetch API** : Communication avec le backend
 - **localStorage** : Stockage des tokens JWT
 
-## 🔒 Sécurité
+## Sécurité
 
 - Validation côté client avant envoi au serveur
 - Sanitization des entrées utilisateur
@@ -77,7 +77,7 @@ const API_BASE_URL = 'http://localhost:3001/api';
 - Protection XSS via échappement HTML
 - HTTPS recommandé en production
 
-## 📱 Responsive Design
+## Responsive Design
 
 L'interface est optimisée pour :
 - Desktop (1920x1080+)
@@ -85,17 +85,17 @@ L'interface est optimisée pour :
 - Tablet (768x1024)
 - Mobile (320x568+)
 
-## 🎯 Fonctionnalités UI
+## Fonctionnalités UI
 
-- ✅ Authentification (inscription/connexion)
-- ✅ Liste des notes avec recherche
-- ✅ Création/édition/suppression de notes
-- ✅ Partage de notes avec permissions
-- ✅ Verrouillage de notes partagées
-- ✅ Notifications utilisateur
-- ✅ Mode sombre (optionnel)
+- Authentification (inscription/connexion)
+- Liste des notes avec recherche
+- Création/édition/suppression de notes
+- Partage de notes avec permissions
+- Verrouillage de notes partagées
+- Notifications utilisateur
+- Mode sombre (optionnel)
 
-## 🛠️ Développement
+## Développement
 
 Pour développer le frontend indépendamment :
 
@@ -103,9 +103,8 @@ Pour développer le frontend indépendamment :
 2. Démarrer le serveur de développement frontend
 3. Les changements sont visibles immédiatement (pas de build requis)
 
-## 📝 Notes
+## Notes
 
 - Les fichiers JavaScript sont chargés en tant que modules ES6
 - Aucun build step requis (pas de webpack/babel)
 - Compatible avec tous les navigateurs modernes (Chrome 90+, Firefox 88+, Safari 14+)
-

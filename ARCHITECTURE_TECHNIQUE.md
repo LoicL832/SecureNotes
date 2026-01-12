@@ -1,4 +1,4 @@
-# 🏗️ ARCHITECTURE TECHNIQUE - SecureNotes
+# ARCHITECTURE TECHNIQUE - SecureNotes
 
 ## Système de Notes Sécurisé avec Réplication Active-Active
 
@@ -7,18 +7,18 @@
 
 ---
 
-## 📊 VUE D'ENSEMBLE
+## VUE D'ENSEMBLE
 
 ### Architecture Globale
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    FRONTEND (HTTP)                      │
-│                   Port 8080                             │
-│    - Interface utilisateur                              │
-│    - Gestion des notes                                  │
-│    - Authentification                                   │
-└────────────────┬────────────────────────────────────────┘
+┌─────────────────────────────────────────────────┐
+│                    FRONTEND (HTTP)              │
+│                   Port 8080                      │
+│    - Interface utilisateur                       │
+│    - Gestion des notes                           │
+│    - Authentification                            │
+└─────────────────────────────────────────────────┘
                  │
                  │ HTTPS
                  │
@@ -43,7 +43,7 @@
 
 ---
 
-## 🔄 RÉPLICATION ACTIVE-ACTIVE
+## RÉPLICATION ACTIVE-ACTIVE
 
 ### Caractéristiques
 
@@ -52,14 +52,14 @@
 - Server 2 (port 3002) - Réplica
 
 **Avantages :**
-- ✅ Haute disponibilité (failover automatique)
-- ✅ Synchronisation bidirectionnelle temps réel
-- ✅ Pas de point unique de défaillance
-- ✅ Load balancing possible
+- Haute disponibilité (failover automatique)
+- Synchronisation bidirectionnelle temps réel
+- Pas de point unique de défaillance
+- Load balancing possible
 
 ### Communication Inter-Serveurs
 
-```javascript
+```
 // Configuration
 Server 1 : https://localhost:3001
   ↓ peer: https://localhost:3002
@@ -75,27 +75,19 @@ Server 2 : https://localhost:3002
 ### Flux de Réplication
 
 ```
-┌─────────────────────────────────────────────┐
-│  1. Client crée/modifie une note            │
-│     ↓                                        │
-│  2. Server 1 enregistre localement          │
-│     ↓                                        │
-│  3. Server 1 réplique vers Server 2         │
-│     POST https://localhost:3002/internal    │
-│     ↓                                        │
-│  4. Server 2 reçoit et enregistre           │
-│     ↓                                        │
-│  5. Server 2 confirme                       │
-│     ↓                                        │
-│  6. Synchronisation complète ✅             │
-└─────────────────────────────────────────────┘
+1. Client crée/modifie une note
+2. Server 1 enregistre localement
+3. Server 1 réplique vers Server 2 (POST https://localhost:3002/internal)
+4. Server 2 reçoit et enregistre
+5. Server 2 confirme
+6. Synchronisation complète
 ```
 
 ### Code Clé
 
 **Fichier :** `backend/src/services/replicationService.js`
 
-```javascript
+```
 // Agent HTTPS pour certificats auto-signés
 const httpsAgent = new https.Agent({
   rejectUnauthorized: false  // Tests locaux uniquement
@@ -131,7 +123,7 @@ async syncWithPeer() {
 ```
 [server1] Note created: {noteId}
 [server1] Replicating to peer: https://localhost:3002
-[server1] ✅ Sync successful
+[server1] Sync successful
 
 [server2] Received replication from server1
 [server2] Note replicated successfully
@@ -139,7 +131,7 @@ async syncWithPeer() {
 
 ---
 
-## 📁 STRUCTURE DU STOCKAGE
+## STRUCTURE DU STOCKAGE
 
 ### Organisation des Fichiers
 
@@ -149,9 +141,7 @@ backend/data/
 │   ├── [userId-uuid]/              # Répertoire par utilisateur (700)
 │   │   ├── metadata.json           # Métadonnées des notes (600)
 │   │   ├── [noteId-uuid].enc       # Note chiffrée (600)
-│   │   ├── [noteId-uuid].lock      # Verrouillage (600)
-│   │   └── ...
-│   └── ...
+│   │   └── [noteId-uuid].lock      # Verrouillage (600)
 ├── users/
 │   └── users.json                  # Base utilisateurs (600)
 ├── shares/
@@ -164,11 +154,11 @@ backend/data/
 
 | Type | Permissions | Signification |
 |------|-------------|---------------|
-| **Répertoires** | `700` (rwx------) | Propriétaire uniquement |
-| **Fichiers** | `600` (rw-------) | Propriétaire uniquement |
+| Répertoires | `700` (rwx------) | Propriétaire uniquement |
+| Fichiers | `600` (rw-------) | Propriétaire uniquement |
 
 **Code :**
-```javascript
+```
 // Création répertoire
 fs.mkdirSync(userDir, { mode: 0o700 });
 
@@ -183,7 +173,7 @@ fs.chmodSync(noteFile, 0o600);
 
 **Fichier :** `metadata.json`
 
-```json
+```
 [
   {
     "id": "uuid-note",
@@ -202,14 +192,14 @@ fs.chmodSync(noteFile, 0o600);
 
 ---
 
-## 🔐 SÉCURITÉ
+## SÉCURITÉ
 
 ### Chiffrement
 
 **Algorithme :** AES-256-GCM (Galois/Counter Mode)
 
 **Processus :**
-```javascript
+```
 // Chiffrement
 const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
 const encrypted = Buffer.concat([
@@ -227,16 +217,11 @@ const decrypted = Buffer.concat([
 ]);
 ```
 
-**Avantages AES-GCM :**
-- Confidentialité (chiffrement)
-- Intégrité (authentication tag)
-- Performance élevée
-
 ### Authentification
 
 **JWT (JSON Web Tokens)**
 
-```javascript
+```
 // Génération token
 const token = jwt.sign(
   { 
@@ -252,16 +237,11 @@ const token = jwt.sign(
 const decoded = jwt.verify(token, config.jwt.secret);
 ```
 
-**Protection :**
-- Signature HMAC-SHA256
-- Expiration automatique
-- Secret fort (256 bits minimum)
-
 ### Protection Path Traversal
 
 **Double validation :**
 
-```javascript
+```
 // 1. Middleware
 function preventPathTraversal(req, res, next) {
   const params = [...req.params, ...Object.values(req.query)];
@@ -283,44 +263,9 @@ if (!uuidValidation.valid) {
 }
 ```
 
-### Verrouillage Concurrence
-
-**Système double :**
-
-1. **Métadonnées** (rapide, en mémoire)
-2. **Fichier .lock** (persistant, résiste aux crashes)
-
-```javascript
-// Création lock
-createLockFile(userId, noteId) {
-  const lockFile = `${noteId}.lock`;
-  const lockData = {
-    lockedBy: userId,
-    lockedAt: new Date().toISOString(),
-    pid: process.pid
-  };
-  
-  // Flag 'wx' = atomic, échoue si existe
-  fs.writeFileSync(lockFile, JSON.stringify(lockData), {
-    mode: 0o600,
-    flag: 'wx'
-  });
-}
-
-// Utilisation
-try {
-  this.createLockFile(userId, noteId);
-  // ... modification note ...
-} finally {
-  this.removeLockFile(userId, noteId);
-}
-```
-
-**Expiration :** 5 minutes (configurable)
-
 ---
 
-## 🌐 API REST
+## API REST
 
 ### Endpoints Principaux
 
@@ -378,7 +323,7 @@ GET    /api/internal/health  - Santé du serveur
 
 ---
 
-## 📊 TECHNOLOGIES
+## TECHNOLOGIES
 
 ### Backend
 
@@ -411,7 +356,7 @@ GET    /api/internal/health  - Santé du serveur
 
 ---
 
-## 🔧 CONFIGURATION
+## CONFIGURATION
 
 ### Fichier : `backend/config/config.js`
 
@@ -456,7 +401,7 @@ module.exports = {
 
 ---
 
-## 📈 PERFORMANCE
+## PERFORMANCE
 
 ### Optimisations
 
@@ -477,7 +422,7 @@ module.exports = {
 
 ---
 
-## 🧪 TESTS
+## TESTS
 
 ### Tests Automatisés
 
@@ -501,7 +446,7 @@ module.exports = {
 
 ---
 
-## 📝 LOGS & AUDIT
+## LOGS & AUDIT
 
 ### Structure Logs
 
@@ -533,25 +478,24 @@ module.exports = {
 
 ---
 
-## ✅ CONFORMITÉ
+## CONFORMITÉ
 
 ### UMLsec (100%)
-- <<secure links>> ✅
-- <<encrypted>> ✅
-- <<secrecy>> ✅
-- <<integrity>> ✅
-- <<critical>> ✅
-- <<no down-flow>> ✅
-- <<data security>> ✅
+- <<**secure links**>> 
+- <<**encrypted**>> 
+- <<**secrecy**>> 
+- <<**integrity**>> 
+- <<**critical**>> 
+- <<**no down-flow**>>
+- <<**data security**>> 
 
 ### Groupe 6
-- Stockage fichiers ✅
-- Pas de SQL ✅
-- Path Traversal protection ✅
-- Permissions restrictives ✅
-- Réplication Active-Active ✅
+- Stockage fichiers 
+- Pas de SQL 
+- Path Traversal protection 
+- Permissions restrictives 
+- Réplication Active-Active 
 
 ---
 
-**Architecture validée et prête pour évaluation ! 🏗️**
-
+**Architecture validée et prête pour évaluation !**
