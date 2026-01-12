@@ -190,6 +190,8 @@ class NotesManager {
     }
 
     renderSharesList(shares, container) {
+        console.log('renderSharesList called with', shares.length, 'shares');
+
         if (shares.length === 0) {
             container.innerHTML = '<div class="empty-state">📤<p>Vous n\'avez partagé aucune note</p></div>';
             return;
@@ -202,11 +204,29 @@ class NotesManager {
                     <p>Partagée avec: <strong>${this.escapeHtml(share.sharedWithUsername)}</strong></p>
                     <p>Permission: <span class="note-badge ${share.permission}">${share.permission === 'read' ? 'Lecture' : 'Écriture'}</span></p>
                 </div>
-                <button class="btn btn-danger" onclick="notesManager.revokeShare('${share.shareId}')">
+                <button class="btn btn-danger revoke-share-btn" data-share-id="${share.shareId}">
                     Révoquer
                 </button>
             </div>
         `).join('') + '</div>';
+
+        // Attache les événements de clic après avoir créé les éléments
+        const revokeButtons = container.querySelectorAll('.revoke-share-btn');
+        console.log('Found', revokeButtons.length, 'revoke buttons');
+
+        revokeButtons.forEach((btn, index) => {
+            console.log(`Attaching event to button ${index}, shareId:`, btn.dataset.shareId);
+            btn.addEventListener('click', (e) => {
+                console.log('🔴 BOUTON RÉVOQUER CLIQUÉ!', btn.dataset.shareId);
+                e.preventDefault();
+                e.stopPropagation();
+                const shareId = btn.dataset.shareId;
+                console.log('Calling revokeShare with shareId:', shareId);
+                this.revokeShare(shareId);
+            });
+        });
+
+        console.log('Event listeners attached successfully');
     }
 
     async openNote(noteId, isShared) {
@@ -337,15 +357,21 @@ class NotesManager {
     }
 
     async revokeShare(shareId) {
+        console.log('🔴 revokeShare function called with shareId:', shareId);
+
         if (!confirm('Êtes-vous sûr de vouloir révoquer ce partage ?')) {
+            console.log('User cancelled revoke confirmation');
             return;
         }
 
+        console.log('User confirmed, calling API...');
         try {
             await api.revokeShare(shareId);
+            console.log('API call successful');
             showNotification('Partage révoqué', 'success');
             this.loadMyShares();
         } catch (error) {
+            console.error('Error revoking share:', error);
             showNotification(error.message, 'error');
         }
     }

@@ -139,6 +139,7 @@ class APIClient {
     }
 
     async revokeShare(shareId) {
+        console.log("Revoking share with ID:", shareId);
         return this.request(`/shares/${shareId}`, {
             method: 'DELETE'
         });
