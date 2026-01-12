@@ -61,9 +61,11 @@ module.exports = {
 
   // Rate limiting authentification (plus strict)
   authRateLimit: {
-    windowMs: 5 * 60 * 1000, // 5 minutes
-    max: 50, // 50 tentatives par 5 minutes pour faciliter les tests
-    skipSuccessfulRequests: true
+    windowMs: process.env.NODE_ENV === 'test' ? 1 * 60 * 1000 : 5 * 60 * 1000, // 1 minute en test, 5 minutes en production
+    max: process.env.NODE_ENV === 'test' ? 100 : 50, // 100 requêtes par minute en test, 50 par 5 minutes en production
+    skipSuccessfulRequests: true,
+    standardHeaders: true,
+    legacyHeaders: false
   },
 
   // Configuration chiffrement

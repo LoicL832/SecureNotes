@@ -706,11 +706,22 @@ class NoteService {
         } else if (lockAge >= 5 * 60 * 1000) {
           logger.warn('Removing stale lock file', { userId, noteId, lockAge });
           fs.unlinkSync(lockFile);
+        } else if (existingLock.lockedBy === (editorId || userId)) {
+          // Même utilisateur re-verrouille, on met juste à jour le timestamp
+          fs.writeFileSync(lockFile, JSON.stringify(lockData, null, 2), {
+            mode: 0o600,
+            encoding: 'utf8'
+          });
+          logger.info('Lock file updated (same user)', { userId, noteId, editorId: editorId || userId });
+          return true;
         }
       }
 
+      // Utilise le flag 'wx' pour une création atomique et exclusive
+      // Cela garantit qu'aucune race condition ne peut se produire
       fs.writeFileSync(lockFile, JSON.stringify(lockData, null, 2), {
         mode: 0o600,
+        flag: 'wx',
         encoding: 'utf8'
       });
 
@@ -719,6 +730,10 @@ class NoteService {
     } catch (error) {
       if (error.message.includes('currently being edited')) {
         throw error;
+      }
+      // Gère l'erreur EEXIST du flag 'wx' comme une tentative de lock concurrent
+      if (error.code === 'EEXIST') {
+        throw new Error(`Note is currently being edited by another user`);
       }
       logger.error('Failed to create lock file', {
         userId,

@@ -69,9 +69,12 @@ app.use(helmet({
 // CORS
 app.use(cors(config.cors));
 
-// Rate limiting global - DÉSACTIVÉ POUR TESTS
-// const limiter = rateLimit(config.rateLimit);
-// app.use('/api/', limiter);
+// Rate limiting global
+const limiter = rateLimit(config.rateLimit);
+app.use('/api/', limiter);
+
+// Rate limiting spécifique pour l'authentification (plus strict)
+const authLimiter = rateLimit(config.authRateLimit);
 
 // Parse JSON avec limite de taille
 app.use(express.json({ limit: '1mb' }));
@@ -108,7 +111,7 @@ app.get('/health', (req, res) => {
 });
 
 // Routes API
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/notes', notesRoutes);
 app.use('/api/shares', sharesRoutes);
 app.use('/api/internal', internalRoutes);
