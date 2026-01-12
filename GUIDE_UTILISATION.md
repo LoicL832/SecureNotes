@@ -15,6 +15,18 @@
 
 ### Lancement Simple
 
+#### Premier Lancement :
+```bash
+# À la racine du projet
+npm install
+```
+- Générer les certificats SSL
+```bash
+cd backend/certs
+./generate-cert.sh
+cd ../..
+```
+#### Chaque Lancement :
 ```bash
 # À la racine du projet
 npm start
@@ -48,32 +60,6 @@ Ctrl+C
 
 ---
 
-## POUR LE PROFESSEUR
-
-### Démarrage en 3 Étapes
-
-#### 1. Générer les certificats SSL
-```bash
-cd backend/certs
-./generate-cert.sh
-cd ../..
-```
-
-#### 2. Démarrer l'application
-```bash
-npm start
-```
-
-#### 3. Accepter les certificats
-- `https://localhost:3001` → Avancé → Continuer
-- `https://localhost:3002` → Avancé → Continuer
-- `http://localhost:8080` → Utiliser l'application
-
-### Tests Automatisés
-```bash
-./test-security.sh
-```
-**Résultat attendu : 20/20 tests passés**
 
 ### Démonstrations Recommandées
 

@@ -53,16 +53,16 @@ module.exports = {
 
   // Rate limiting
   rateLimit: {
-    windowMs: process.env.NODE_ENV === 'test' ? 10 * 1000 : 15 * 60 * 1000, // 10 seconds in test, 15 minutes in production
-    max: process.env.NODE_ENV === 'test' ? 200 : 100, // Balanced for tests
+    windowMs: process.env.NODE_ENV === 'test' ? 60 * 1000 : 15 * 60 * 1000, // 60 seconds in test, 15 minutes in production
+    max: process.env.NODE_ENV === 'test' ? 1000 : 100, // Very high limit for tests with longer window
     standardHeaders: true,
     legacyHeaders: false
   },
 
   // Rate limiting authentification (plus strict)
   authRateLimit: {
-    windowMs: process.env.NODE_ENV === 'test' ? 10 * 1000 : 15 * 60 * 1000, // 10 seconds in test, 15 minutes in production
-    max: process.env.NODE_ENV === 'test' ? 100 : 5, // Balanced for tests
+    windowMs: process.env.NODE_ENV === 'test' ? 60 * 1000 : 15 * 60 * 1000, // 60 seconds in test, 15 minutes in production
+    max: process.env.NODE_ENV === 'test' ? 500 : 5, // Very high limit for tests with longer window
     skipSuccessfulRequests: true
   },
 
