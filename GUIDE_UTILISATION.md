@@ -3,11 +3,10 @@
 ## Table des Matières
 
 1. [Démarrage Rapide](#démarrage-rapide)
-2. [Pour le Professeur](#pour-le-professeur)
-3. [Lancement Détaillé](#lancement-détaillé)
-4. [Accepter les Certificats SSL](#accepter-les-certificats-ssl)
-5. [Tests de Sécurité](#tests-de-sécurité)
-6. [Dépannage](#dépannage)
+2. [Lancement Détaillé](#lancement-détaillé)
+3. [Accepter les Certificats SSL](#accepter-les-certificats-ssl)
+4[Tests de Sécurité](#tests-de-sécurité)
+5. [Dépannage](#dépannage)
 
 ---
 

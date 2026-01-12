@@ -9,25 +9,7 @@ Projet universitaire - Groupe 6 (Stockage Fichiers)
 
 ## DÉMARRAGE RAPIDE
 
-```bash
-# À la racine du projet
-npm start
-```
-
-**Lance automatiquement :**
-- Server 1 (HTTPS) : https://localhost:3001
-- Server 2 (HTTPS) : https://localhost:3002
-- Frontend : http://localhost:8080
-
-### Accepter les Certificats SSL (OBLIGATOIRE)
-
-1. Ouvrir `https://localhost:3001` → Cliquer "Avancé" → "Continuer"
-2. Ouvrir `https://localhost:3002` → Cliquer "Avancé" → "Continuer"
-3. Ouvrir `http://localhost:8080` → Rafraîchir (Cmd+R)
-4. Utiliser l'application
-
-**Certificats auto-signés normaux pour tests locaux académiques**
-
+-  Voir **[GUIDE_UTILISATION.md](GUIDE_UTILISATION.md)** - Guide complet d'utilisation, démarrage et dépannage
 ---
 
 ## DOCUMENTATION COMPLÈTE
